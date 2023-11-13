@@ -1,5 +1,7 @@
+import { Text } from 'react-native';
+
 const App = () => {
-    return <h1>Hello, world!</h1>;
+    return <Text>Hello, world!</Text>;
 };
 
 export default App;

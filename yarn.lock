@@ -1190,6 +1190,11 @@
   dependencies:
     "@types/hammerjs" "^2.0.36"
 
+"@expo-google-fonts/lexend@^0.2.3":
+  version "0.2.3"
+  resolved "https://registry.yarnpkg.com/@expo-google-fonts/lexend/-/lexend-0.2.3.tgz#05991a5a20266cd2436072872ec73dcd4de2d073"
+  integrity sha512-GtEv1oYYAZ0+bdVbvmR640dsOuQAPAZFDgBL2p8zGDnz0oGcNxQVxwml8k8We6BnRLyJmM43WshgxZvQ4i6TeA==
+
 "@expo/bunyan@4.0.0", "@expo/bunyan@^4.0.0":
   version "4.0.0"
   resolved "https://registry.yarnpkg.com/@expo/bunyan/-/bunyan-4.0.0.tgz#be0c1de943c7987a9fbd309ea0b1acd605890c7b"
@@ -3354,7 +3359,7 @@ expo-router@^2.0.0:
     schema-utils "^4.0.1"
     url "^0.11.0"
 
-expo-splash-screen@~0.20.2:
+expo-splash-screen@~0.20.2, expo-splash-screen@~0.20.5:
   version "0.20.5"
   resolved "https://registry.yarnpkg.com/expo-splash-screen/-/expo-splash-screen-0.20.5.tgz#ebeba3e3977606830f74f506ab2cc25042bb7efd"
   integrity sha512-nTALYdjHpeEA30rdOWSguxn72ctv8WM8ptuUgpfRgsWyn4i6rwYds/rBXisX69XO5fg+XjHAQqijGx/b28+3tg==
