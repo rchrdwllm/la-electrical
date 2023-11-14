@@ -69,7 +69,7 @@ const SignIn = () => {
             <Pressable style={styles.backgroundContainer} onPress={Keyboard.dismiss}>
                 <ImageBackground
                     style={styles.background}
-                    source={require('../assets/sign-in-header.png')}
+                    source={require('../assets/header_bg.png')}
                 >
                     <View style={styles.backgroundText}>
                         <Image

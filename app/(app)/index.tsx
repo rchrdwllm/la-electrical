@@ -6,12 +6,15 @@ import { firebaseAuth } from '../../config/firebase';
 import { useAuth } from '../../hooks/useAuth';
 import { useTheme } from '../../hooks/useTheme';
 import { useState } from 'react';
+import Text from '../../components/base/Text';
 
 const Admin = () => {
     const [loading, setLoading] = useState(false);
-    const [_, setUser] = useAuth();
+    const [user, setUser] = useAuth();
     const { palette } = useTheme();
     const styles = styling(palette);
+
+    if (!user) return null;
 
     const handleSignOut = async () => {
         setLoading(true);
@@ -30,12 +33,14 @@ const Admin = () => {
 
     return (
         <View style={styles.container}>
+            <Text>Email: {user.email}</Text>
             <Button
                 loading={loading}
                 disabled={loading}
                 showText={!loading}
                 text="Sign out"
                 onPress={handleSignOut}
+                style={styles.logoutBtn}
             />
         </View>
     );
@@ -48,6 +53,12 @@ const styling = (palette: Colors) =>
             backgroundColor: palette.primaryBackground,
             paddingTop: 48,
             paddingHorizontal: 16,
+            justifyContent: 'center',
+            alignItems: 'center',
+            gap: 16,
+        },
+        logoutBtn: {
+            width: '100%',
         },
     });
 
