@@ -1,7 +1,30 @@
-import { Text } from 'react-native';
+import { Colors } from '../types';
+import { View, StyleSheet } from 'react-native';
+import Text from '../components/base/Text';
+import Link from '../components/base/Link';
+import { useTheme } from '../hooks/useTheme';
 
-const App = () => {
-    return <Text>Hello, world!</Text>;
+const Home = () => {
+    const { palette } = useTheme();
+    const styles = styling(palette);
+
+    return (
+        <View style={styles.container}>
+            <Link href="sign-in">
+                <Text>Landing</Text>
+            </Link>
+        </View>
+    );
 };
 
-export default App;
+const styling = (palette: Colors) =>
+    StyleSheet.create({
+        container: {
+            flex: 1,
+            backgroundColor: palette.primaryBackground,
+            justifyContent: 'center',
+            alignItems: 'center',
+        },
+    });
+
+export default Home;

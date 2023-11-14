@@ -20,11 +20,11 @@ export const dark: Colors = {
     invertedText: '#0F0701',
     invertedOnAccent: '#FFFFFF',
     primaryBackground: '#0F0701',
-    secondaryBackground: '#241E19',
+    secondaryBackground: '#1C150F',
     overlayPrimaryBackground: '#F8F5F233',
     primaryAccent: '#FFC996',
-    secondaryAccent: '#302820',
-    primaryBorder: '#3C3836',
+    secondaryAccent: '#231A12',
+    primaryBorder: '#302824',
     primaryShadow: '#F3CEAA',
 };
 
