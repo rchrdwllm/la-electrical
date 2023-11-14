@@ -33,7 +33,7 @@ const Button = forwardRef(
             style,
             textStyle,
             text,
-            showText,
+            showText = true,
             loading,
             disabled,
         }: ButtonProps,

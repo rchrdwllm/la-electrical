@@ -6,6 +6,7 @@ import {
     Keyboard,
     Pressable,
     ImageBackground,
+    Image,
 } from 'react-native';
 import { Colors } from '../types';
 import Text from '../components/base/Text';
@@ -13,9 +14,11 @@ import TextInput from '../components/base/TextInput';
 import Button from '../components/base/Button';
 import { firebaseAuth } from '../config/firebase';
 import { setStatusBarStyle } from 'expo-status-bar';
-import { User, signInWithEmailAndPassword } from 'firebase/auth';
+import { onAuthStateChanged, signInWithEmailAndPassword } from 'firebase/auth';
 import { useTheme } from '../hooks/useTheme';
 import { useEffect, useState } from 'react';
+import { useAuth } from '../hooks/useAuth';
+import { router } from 'expo-router';
 
 const SignIn = () => {
     const { palette } = useTheme();
@@ -23,14 +26,32 @@ const SignIn = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [loading, setLoading] = useState(false);
+    const [user, setUser] = useAuth();
+
+    useEffect(() => {
+        setStatusBarStyle('light');
+    }, []);
+
+    useEffect(() => {
+        if (user) router.replace('/(app)');
+    }, [user]);
+
+    useEffect(() => {
+        onAuthStateChanged(firebaseAuth, user => {
+            setUser(user);
+        });
+    }, []);
 
     const signIn = async () => {
+        Keyboard.dismiss();
+
         setLoading(true);
 
         try {
             const res = await signInWithEmailAndPassword(firebaseAuth, email, password);
 
-            alert(JSON.stringify(res.user));
+            setUser(res.user);
+            router.replace('/(app)');
         } catch (error: any) {
             console.log(error);
 
@@ -39,10 +60,6 @@ const SignIn = () => {
             setLoading(false);
         }
     };
-
-    useEffect(() => {
-        setStatusBarStyle('light');
-    }, []);
 
     return (
         <KeyboardAvoidingView
@@ -54,15 +71,24 @@ const SignIn = () => {
                     style={styles.background}
                     source={require('../assets/sign-in-header.png')}
                 >
-                    <Text fontWeight="bold" style={styles.logoText}>
-                        LAE.
-                    </Text>
+                    <View style={styles.backgroundText}>
+                        <Image
+                            style={styles.backgroundLogo}
+                            source={require('../assets/logo_light.png')}
+                        />
+                        <Text fontWeight="bold" style={styles.logoText}>
+                            LAE.
+                        </Text>
+                    </View>
                     <Text style={styles.logoSubtext}>Lath's Auto-Electrical Shop</Text>
                 </ImageBackground>
             </Pressable>
             <Pressable style={styles.signInContainer} onPress={Keyboard.dismiss}>
                 <Text style={styles.signInText} fontWeight="bold">
                     Sign in
+                </Text>
+                <Text style={styles.subtext}>
+                    Sign in to elevate the admin experience{'\n'} with LAES
                 </Text>
                 <View style={styles.forms}>
                     <TextInput
@@ -106,6 +132,16 @@ const styling = (palette: Colors) =>
             alignItems: 'center',
             gap: 16,
         },
+        backgroundLogo: {
+            height: 80,
+            width: 80,
+        },
+        backgroundText: {
+            flexDirection: 'row',
+            justifyContent: 'center',
+            alignItems: 'center',
+            gap: 8,
+        },
         logoText: {
             fontSize: 64,
             color: palette.invertedOnAccent,
@@ -123,6 +159,11 @@ const styling = (palette: Colors) =>
         },
         signInText: {
             fontSize: 32,
+            textAlign: 'center',
+        },
+        subtext: {
+            marginTop: 16,
+            color: palette.secondaryText,
             textAlign: 'center',
         },
         forms: {

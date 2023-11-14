@@ -1,39 +1,56 @@
 import { Stack } from 'expo-router';
-import { User, onAuthStateChanged } from 'firebase/auth';
-import { firebaseAuth } from '../config/firebase';
-import { useEffect, useState } from 'react';
-import { router } from 'expo-router';
+import { AuthProvider } from '../context/Auth';
+import SplashScreen from '../components/SplashScreen';
+import Reanimated, { FadeIn, FadeOut } from 'react-native-reanimated';
+import { useCallback, useEffect, useState } from 'react';
 
 const Layout = () => {
-    const [user, setUser] = useState<User | null>(null);
+    const [appIsReady, setAppIsReady] = useState(false);
+
+    const prepare = async () => {
+        try {
+            await new Promise(resolve => setTimeout(resolve, 2000));
+        } catch (e) {
+            console.warn(e);
+        } finally {
+            setAppIsReady(true);
+        }
+    };
 
     useEffect(() => {
-        onAuthStateChanged(firebaseAuth, user => {
-            console.log(user);
-
-            setUser(user);
-
-            if (user) {
-                router.replace('/admin');
-            }
-        });
+        prepare();
     }, []);
 
-    useEffect(() => {
-        if (user) {
-            router.replace('/admin');
+    const onLayoutRootView = useCallback(async () => {
+        if (appIsReady) {
         }
-    }, [user]);
+    }, [appIsReady]);
+
+    if (!appIsReady) return <SplashScreen />;
 
     return (
-        <Stack
-            screenOptions={{
-                headerShown: false,
-            }}
+        <Reanimated.View
+            entering={FadeIn}
+            exiting={FadeOut}
+            onLayout={onLayoutRootView}
+            style={{ flex: 1 }}
         >
-            <Stack.Screen name="index" />
-            <Stack.Screen name="sign-in" />
-        </Stack>
+            <AuthProvider>
+                <Stack
+                    initialRouteName="sign-in"
+                    screenOptions={{
+                        headerShown: false,
+                    }}
+                >
+                    <Stack.Screen
+                        name="sign-in"
+                        options={{
+                            animation: 'fade',
+                        }}
+                    />
+                </Stack>
+            </AuthProvider>
+        </Reanimated.View>
     );
 };
 
