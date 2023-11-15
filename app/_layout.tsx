@@ -1,11 +1,17 @@
 import { Stack } from 'expo-router';
 import { AuthProvider } from '../context/Auth';
 import SplashScreen from '../components/SplashScreen';
+import { StatusBar } from 'expo-status-bar';
 import Reanimated, { FadeIn, FadeOut } from 'react-native-reanimated';
 import { useCallback, useEffect, useState } from 'react';
+import { useTheme } from '../hooks/useTheme';
+import { Colors } from '../types';
+import { StyleSheet } from 'react-native';
 
 const Layout = () => {
     const [appIsReady, setAppIsReady] = useState(false);
+    const { palette } = useTheme();
+    const styles = styling(palette);
 
     const prepare = async () => {
         try {
@@ -30,10 +36,10 @@ const Layout = () => {
 
     return (
         <Reanimated.View
-            entering={FadeIn}
+            entering={FadeIn.delay(250)}
             exiting={FadeOut}
             onLayout={onLayoutRootView}
-            style={{ flex: 1 }}
+            style={styles.container}
         >
             <AuthProvider>
                 <Stack
@@ -50,8 +56,17 @@ const Layout = () => {
                     />
                 </Stack>
             </AuthProvider>
+            <StatusBar animated style="light" />
         </Reanimated.View>
     );
 };
+
+const styling = (palette: Colors) =>
+    StyleSheet.create({
+        container: {
+            flex: 1,
+            backgroundColor: palette.primaryBackground,
+        },
+    });
 
 export default Layout;
