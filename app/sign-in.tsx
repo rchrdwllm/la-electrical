@@ -21,7 +21,7 @@ import { useAuth } from '../hooks/useAuth';
 import { router } from 'expo-router';
 
 const SignIn = () => {
-    const { palette } = useTheme();
+    const { theme, palette } = useTheme();
     const styles = styling(palette);
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -30,7 +30,7 @@ const SignIn = () => {
 
     useEffect(() => {
         setStatusBarStyle('light');
-    }, []);
+    }, [theme]);
 
     useEffect(() => {
         if (user) router.replace('/(app)');
