@@ -7,7 +7,6 @@ import Reanimated, {
     interpolateColor,
     measure,
     runOnUI,
-    useAnimatedReaction,
     useAnimatedRef,
     useAnimatedStyle,
     useDerivedValue,
@@ -18,14 +17,15 @@ import ChevronDownIcon from '../../assets/icons/chevron-down-icon.svg';
 import CheckIcon from '../../assets/icons/check-icon.svg';
 import Text from '../shared/Text';
 import Button from '../shared/Button';
+import { Reservation } from '../../types';
 import { useTheme } from '../../hooks/useTheme';
 import { useSharedValue } from 'react-native-reanimated';
 import { useState } from 'react';
 
-const ReservationItem = () => {
+const ReservationItem = ({ reservationDate, name, typeOfService, isPaid, price }: Reservation) => {
     const { theme, palette } = useTheme();
     const styles = styling(palette);
-    const [isPaid, setIsPaid] = useState(false);
+    const [paid, setPaid] = useState(isPaid);
 
     const dropdownRef = useAnimatedRef<Reanimated.View>();
     const heightValue = useSharedValue(0);
@@ -53,7 +53,7 @@ const ReservationItem = () => {
     );
     const colorProgress = useDerivedValue(
         () =>
-            isPaid
+            paid
                 ? withTiming(1, {
                       duration: 250,
                       easing: Easing.out(Easing.exp),
@@ -62,7 +62,7 @@ const ReservationItem = () => {
                       duration: 250,
                       easing: Easing.in(Easing.exp),
                   }),
-        [isPaid]
+        [paid]
     );
 
     const animatedRotate = useAnimatedStyle(() => ({
@@ -111,8 +111,8 @@ const ReservationItem = () => {
             <Reanimated.View style={styles.container}>
                 <View style={styles.flexContainer}>
                     <View style={styles.reservationDetails}>
-                        <Text fontWeight="medium">Alternator repair</Text>
-                        <Text style={styles.reservationCustomer}>Richard William Flores</Text>
+                        <Text fontWeight="medium">{typeOfService}</Text>
+                        <Text style={styles.reservationCustomer}>{name}</Text>
                     </View>
                     <Reanimated.View style={animatedRotate}>
                         <ChevronDownIcon height={20} width={20} stroke={palette.primaryText} />
@@ -120,14 +120,30 @@ const ReservationItem = () => {
                 </View>
                 <Reanimated.View style={[styles.dropdownContainer, animatedHeight]}>
                     <Reanimated.View ref={dropdownRef} style={[styles.dropdown, animatedOpacity]}>
-                        <Button style={styles.dropdownBtn} text="Edit" />
-                        <Button style={styles.dropdownBtn} text="Delete" />
-                        <Button
-                            onPress={() => setIsPaid(!isPaid)}
-                            style={[styles.dropdownBtn, animatedColors]}
-                            Icon={CheckIcon}
-                            iconColor={isPaid ? palette.primaryAccent : palette.invertedText}
-                        />
+                        <View style={styles.details}>
+                            <Text style={styles.date}>
+                                {new Date(reservationDate).toLocaleString()}
+                            </Text>
+                            <Text
+                                fontWeight="medium"
+                                style={{
+                                    color: paid ? palette.success : palette.warning,
+                                }}
+                            >
+                                PHP {price}
+                            </Text>
+                        </View>
+                        <View style={styles.dropdownBtns}>
+                            <Button style={styles.dropdownBtn} text="Edit" />
+                            <Button style={styles.dropdownBtn} text="Delete" />
+                            <Button
+                                onPress={() => setPaid(!paid)}
+                                style={[styles.dropdownBtn, animatedColors]}
+                                Icon={CheckIcon}
+                                iconSize={19}
+                                iconColor={paid ? palette.primaryAccent : palette.invertedText}
+                            />
+                        </View>
                     </Reanimated.View>
                 </Reanimated.View>
                 <Reanimated.View style={styles.separator}></Reanimated.View>
@@ -169,15 +185,25 @@ const styling = (palette: Colors) =>
             left: 0,
             zIndex: 1,
             flex: 1,
-            flexDirection: 'row',
             width: '100%',
+        },
+        details: {
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+        },
+        date: {
+            color: palette.secondaryText,
+        },
+        dropdownBtns: {
+            flexDirection: 'row',
             gap: 8,
             justifyContent: 'space-between',
             alignItems: 'center',
+            marginTop: 16,
+            marginBottom: 8,
         },
         dropdownBtn: {
             flex: 1,
-            height: '100%',
         },
     });
 
