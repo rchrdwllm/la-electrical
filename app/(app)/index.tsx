@@ -2,6 +2,8 @@ import { View, StyleSheet, Image, Platform, Animated } from 'react-native';
 import Button from '../../components/base/Button';
 import Text from '../../components/base/Text';
 import { Colors } from '../../types';
+import TransparentButton from '../../components/base/TransparentButton';
+import ArchiveIcon from '../../assets/icons/archive-icon.svg';
 import { signOut } from 'firebase/auth';
 import { firebaseAuth } from '../../config/firebase';
 import { useAuth } from '../../hooks/useAuth';
@@ -9,6 +11,7 @@ import { useTheme } from '../../hooks/useTheme';
 import { useEffect, useRef, useState } from 'react';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { setStatusBarStyle } from 'expo-status-bar';
+import TextInput from '../../components/base/TextInput';
 
 const Admin = () => {
     const [loading, setLoading] = useState(false);
@@ -136,6 +139,19 @@ const Admin = () => {
                         <Text fontWeight="bold" style={styles.greeting}>
                             Hello, admin!
                         </Text>
+                        <TextInput
+                            placeholder="Search..."
+                            placeholderTextColor={palette.invertedOnAccent}
+                            style={styles.searchInput}
+                        />
+                        <View style={styles.headerBtns}>
+                            <TransparentButton style={styles.headerBtn} Icon={ArchiveIcon}>
+                                Reservations
+                            </TransparentButton>
+                            <TransparentButton style={styles.headerBtn} Icon={ArchiveIcon}>
+                                Inventory
+                            </TransparentButton>
+                        </View>
                     </View>
                 </Animated.View>
                 <View style={styles.curvedSeparator}></View>
@@ -204,9 +220,22 @@ const styling = (palette: Colors) =>
             bottom: 16,
             gap: 16,
         },
+        searchInput: {
+            backgroundColor: palette.overlayPrimaryBackground,
+        },
         greeting: {
             fontSize: 32,
             color: palette.invertedOnAccent,
+        },
+        headerBtns: {
+            flexDirection: 'row',
+            gap: 16,
+            width: '100%',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+        },
+        headerBtn: {
+            paddingVertical: 32,
         },
         curvedSeparator: {
             height: 64,
