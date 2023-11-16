@@ -54,7 +54,7 @@ const Admin = () => {
                     {
                         height: top,
                         opacity: scrollY.interpolate({
-                            inputRange: [headerHeight - 150, headerHeight - 90],
+                            inputRange: [headerHeight - 100, headerHeight - 90],
                             outputRange: [0, 1],
                         }),
                     },
@@ -121,7 +121,7 @@ const Admin = () => {
                             {
                                 height: headerHeight,
                                 opacity: scrollY.interpolate({
-                                    inputRange: [headerHeight - 150, headerHeight - 90],
+                                    inputRange: [headerHeight - 200, headerHeight - 90],
                                     outputRange: [0, 1],
                                 }),
                             },
@@ -153,9 +153,11 @@ const Admin = () => {
                                     Reservations
                                 </TransparentButton>
                             </Link>
-                            <TransparentButton style={styles.headerBtn} Icon={ArchiveIcon}>
-                                Inventory
-                            </TransparentButton>
+                            <Link href="/inventory" asChild>
+                                <TransparentButton style={styles.headerBtn} Icon={ArchiveIcon}>
+                                    Inventory
+                                </TransparentButton>
+                            </Link>
                         </View>
                     </View>
                 </Animated.View>
