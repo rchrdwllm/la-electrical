@@ -7,7 +7,7 @@ interface TextInputProps extends RNTextInputProps {
     style?: {};
 }
 
-const TextInput = forwardRef((props: TextInputProps, ref) => {
+const TextInput = (props: TextInputProps) => {
     const { palette } = useTheme();
     let [fontsLoaded, fontError] = useFonts({
         Lexend_300Light,
@@ -19,9 +19,7 @@ const TextInput = forwardRef((props: TextInputProps, ref) => {
 
     return (
         <RNTextInput
-            ref={ref as any}
             style={[
-                props.style,
                 {
                     paddingVertical: 12,
                     paddingHorizontal: 10,
@@ -30,13 +28,16 @@ const TextInput = forwardRef((props: TextInputProps, ref) => {
                     color: palette.primaryText,
                     fontFamily: 'Lexend_300Light',
                 },
+                props.style,
             ]}
             cursorColor={palette.primaryAccent}
-            placeholderTextColor={palette.secondaryText}
+            placeholderTextColor={props.placeholderTextColor ?? palette.secondaryText}
             autoCapitalize="none"
-            {...props}
+            value={props.value}
+            onChangeText={props.onChangeText}
+            placeholder={props.placeholder}
         />
     );
-});
+};
 
 export default TextInput;
