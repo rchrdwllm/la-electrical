@@ -1,8 +1,8 @@
 import { StyleSheet, Image } from 'react-native';
 import Reanimated, { FadeIn, FadeOut } from 'react-native-reanimated';
-import { useTheme } from '../hooks/useTheme';
 import { Colors } from '../types';
 import { StatusBar } from 'expo-status-bar';
+import { useTheme } from '../hooks/useTheme';
 
 const SplashScreen = () => {
     const { theme, palette } = useTheme();
@@ -10,6 +10,7 @@ const SplashScreen = () => {
 
     return (
         <Reanimated.View entering={FadeIn} exiting={FadeOut} style={styles.container}>
+            <StatusBar animated style={theme === 'light' ? 'dark' : 'light'} />
             <Image
                 source={
                     theme === 'light'
@@ -18,7 +19,6 @@ const SplashScreen = () => {
                 }
                 style={styles.logo}
             />
-            <StatusBar animated style={theme === 'light' ? 'dark' : 'light'} />
         </Reanimated.View>
     );
 };

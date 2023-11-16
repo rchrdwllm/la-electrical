@@ -12,8 +12,8 @@ import { Colors } from '../types';
 import Text from '../components/shared/Text';
 import TextInput from '../components/shared/TextInput';
 import Button from '../components/shared/Button';
+import { StatusBar, setStatusBarStyle } from 'expo-status-bar';
 import { firebaseAuth } from '../config/firebase';
-import { setStatusBarStyle } from 'expo-status-bar';
 import { onAuthStateChanged, signInWithEmailAndPassword } from 'firebase/auth';
 import { useTheme } from '../hooks/useTheme';
 import { useEffect, useState } from 'react';
@@ -29,10 +29,6 @@ const SignIn = () => {
     const [user, setUser] = useAuth();
 
     useEffect(() => {
-        setStatusBarStyle('light');
-    }, [theme]);
-
-    useEffect(() => {
         if (user) router.replace('/(app)');
     }, [user]);
 
@@ -41,6 +37,10 @@ const SignIn = () => {
             setUser(user);
         });
     }, []);
+
+    useEffect(() => {
+        setStatusBarStyle('light');
+    }, [theme]);
 
     const signIn = async () => {
         Keyboard.dismiss();
@@ -66,6 +66,7 @@ const SignIn = () => {
             behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
             style={styles.container}
         >
+            <StatusBar animated style="light" />
             <Pressable style={styles.backgroundContainer} onPress={Keyboard.dismiss}>
                 <ImageBackground
                     style={styles.background}

@@ -14,7 +14,7 @@ import { useAuth } from '../../hooks/useAuth';
 import { useTheme } from '../../hooks/useTheme';
 import { useEffect, useRef, useState } from 'react';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { setStatusBarStyle } from 'expo-status-bar';
+import { StatusBar, setStatusBarStyle } from 'expo-status-bar';
 
 const Admin = () => {
     const [loading, setLoading] = useState(false);
@@ -43,11 +43,14 @@ const Admin = () => {
     };
 
     useEffect(() => {
-        setStatusBarStyle('light');
+        if (theme === 'dark') {
+            setStatusBarStyle('light');
+        }
     }, [theme]);
 
     return (
         <View style={styles.container}>
+            <StatusBar animated style="light" />
             <Animated.View
                 style={[
                     styles.safeAreaView,
@@ -140,7 +143,7 @@ const Admin = () => {
                             source={require('../../assets/logo_light.png')}
                         />
                         <Text fontWeight="bold" style={styles.greeting}>
-                            Hello, admin!
+                            Hello, Admin!
                         </Text>
                         <TextInput
                             placeholder="Search..."

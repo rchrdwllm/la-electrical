@@ -1,14 +1,23 @@
 import { View, StyleSheet } from 'react-native';
 import Text from '../../components/shared/Text';
-import { useTheme } from '../../hooks/useTheme';
 import { Colors } from '../../types';
+import { useTheme } from '../../hooks/useTheme';
+import { StatusBar, setStatusBarStyle } from 'expo-status-bar';
+import { useEffect } from 'react';
 
 const reservations = () => {
-    const { palette } = useTheme();
+    const { theme, palette } = useTheme();
     const styles = styling(palette);
+
+    useEffect(() => {
+        setTimeout(() => {
+            setStatusBarStyle(theme === 'light' ? 'dark' : 'light');
+        }, 570);
+    }, [theme]);
 
     return (
         <View style={styles.container}>
+            <StatusBar animated style={theme === 'light' ? 'dark' : 'light'} />
             <Text style={styles.text}>Reservations</Text>
         </View>
     );

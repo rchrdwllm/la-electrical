@@ -1,13 +1,12 @@
 import { Redirect, Stack } from 'expo-router';
-import { StatusBar } from 'expo-status-bar';
 import Reanimated, { FadeIn, FadeOut } from 'react-native-reanimated';
+import { Colors } from '../../types';
+import { StyleSheet } from 'react-native';
 import { useAuth } from '../../hooks/useAuth';
 import { useEffect } from 'react';
 import { onAuthStateChanged } from 'firebase/auth';
 import { firebaseAuth } from '../../config/firebase';
 import { useTheme } from '../../hooks/useTheme';
-import { Colors } from '../../types';
-import { StyleSheet } from 'react-native';
 
 const Layout = () => {
     const [user, setUser] = useAuth();
@@ -31,7 +30,6 @@ const Layout = () => {
             >
                 <Stack.Screen name="index" />
             </Stack>
-            <StatusBar animated style="light" />
         </Reanimated.View>
     );
 };

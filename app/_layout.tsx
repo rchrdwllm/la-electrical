@@ -1,7 +1,6 @@
 import { Stack } from 'expo-router';
 import { AuthProvider } from '../context/Auth';
 import SplashScreen from '../components/SplashScreen';
-import { StatusBar } from 'expo-status-bar';
 import Reanimated, { FadeIn, FadeOut } from 'react-native-reanimated';
 import { useCallback, useEffect, useState } from 'react';
 import { useTheme } from '../hooks/useTheme';
@@ -56,7 +55,6 @@ const Layout = () => {
                     />
                 </Stack>
             </AuthProvider>
-            <StatusBar animated style="light" />
         </Reanimated.View>
     );
 };
