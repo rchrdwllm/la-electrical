@@ -11,7 +11,9 @@ export const light: Colors = {
     primaryAccent: '#FA9F42',
     secondaryAccent: '#F8F5F2',
     primaryBorder: '#F4EFEB',
-    primaryShadow: '#F3CEAA',
+    primaryShadow: '#F1BF91',
+    success: '#69A155',
+    warning: '#FFC42E',
 };
 
 export const dark: Colors = {
@@ -25,7 +27,9 @@ export const dark: Colors = {
     primaryAccent: '#FFC996',
     secondaryAccent: '#231A12',
     primaryBorder: '#302824',
-    primaryShadow: '#000000',
+    primaryShadow: '#110700',
+    success: '#69A155',
+    warning: '#FFC42E',
 };
 
 export default { light, dark };
