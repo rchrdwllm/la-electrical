@@ -9,9 +9,9 @@ import {
     Image,
 } from 'react-native';
 import { Colors } from '../types';
-import Text from '../components/base/Text';
-import TextInput from '../components/base/TextInput';
-import Button from '../components/base/Button';
+import Text from '../components/shared/Text';
+import TextInput from '../components/shared/TextInput';
+import Button from '../components/shared/Button';
 import { firebaseAuth } from '../config/firebase';
 import { setStatusBarStyle } from 'expo-status-bar';
 import { onAuthStateChanged, signInWithEmailAndPassword } from 'firebase/auth';

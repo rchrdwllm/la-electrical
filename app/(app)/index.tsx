@@ -1,9 +1,13 @@
 import { View, StyleSheet, Image, Platform, Animated } from 'react-native';
-import Button from '../../components/base/Button';
-import Text from '../../components/base/Text';
+import Button from '../../components/shared/Button';
+import Text from '../../components/shared/Text';
 import { Colors } from '../../types';
-import TransparentButton from '../../components/base/TransparentButton';
+import TransparentButton from '../../components/shared/TransparentButton';
 import ArchiveIcon from '../../assets/icons/archive-icon.svg';
+import CardStackIcon from '../../assets/icons/card-stack-icon.svg';
+import TextInput from '../../components/shared/TextInput';
+import ReservationsSection from '../../components/home/ReservationsSection';
+import { Link } from 'expo-router';
 import { signOut } from 'firebase/auth';
 import { firebaseAuth } from '../../config/firebase';
 import { useAuth } from '../../hooks/useAuth';
@@ -11,7 +15,6 @@ import { useTheme } from '../../hooks/useTheme';
 import { useEffect, useRef, useState } from 'react';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { setStatusBarStyle } from 'expo-status-bar';
-import TextInput from '../../components/base/TextInput';
 
 const Admin = () => {
     const [loading, setLoading] = useState(false);
@@ -145,9 +148,11 @@ const Admin = () => {
                             style={styles.searchInput}
                         />
                         <View style={styles.headerBtns}>
-                            <TransparentButton style={styles.headerBtn} Icon={ArchiveIcon}>
-                                Reservations
-                            </TransparentButton>
+                            <Link href="/reservations" asChild>
+                                <TransparentButton style={styles.headerBtn} Icon={CardStackIcon}>
+                                    Reservations
+                                </TransparentButton>
+                            </Link>
                             <TransparentButton style={styles.headerBtn} Icon={ArchiveIcon}>
                                 Inventory
                             </TransparentButton>
@@ -156,6 +161,7 @@ const Admin = () => {
                 </Animated.View>
                 <View style={styles.curvedSeparator}></View>
                 <View style={styles.content}>
+                    <ReservationsSection />
                     <Text>Email: {user.email}</Text>
                     <Button
                         text="Sign out"
@@ -199,7 +205,7 @@ const styling = (palette: Colors) =>
         },
         headerBg: {
             width: '150%',
-            height: Platform.OS === 'ios' ? 364 : 380,
+            height: 380,
             objectFit: 'cover',
         },
         headerOverlay: {
