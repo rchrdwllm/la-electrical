@@ -5,10 +5,15 @@ import {
     StyleSheet,
     ViewStyle,
     ActivityIndicator,
-    Animated,
     View,
     Platform,
 } from 'react-native';
+import Reanimated, {
+    Easing,
+    useAnimatedStyle,
+    useSharedValue,
+    withTiming,
+} from 'react-native-reanimated';
 import Text from './Text';
 import { ReactNode, forwardRef, useEffect, useRef } from 'react';
 import { useTheme } from '../../hooks/useTheme';
@@ -25,7 +30,7 @@ interface ButtonProps extends PressableProps {
     iconColor?: string;
 }
 
-const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
+const AnimatedPressable = Reanimated.createAnimatedComponent(Pressable);
 
 const Button = forwardRef(
     (
@@ -40,47 +45,46 @@ const Button = forwardRef(
             loading,
             disabled,
             Icon,
-            iconSize = 16,
+            iconSize = 15,
             iconColor,
         }: ButtonProps,
         _
     ) => {
-        const animatedScale = useRef(new Animated.Value(1)).current;
-        const animatedOpacity = useRef(new Animated.Value(1)).current;
+        const scaleProgress = useSharedValue(1);
+        const opacityProgress = useSharedValue(1);
         const { palette } = useTheme();
         const styles = styling();
 
         const onPressIn = () => {
-            Animated.timing(animatedScale, {
-                duration: 100,
-                toValue: 0.97,
-                useNativeDriver: true,
-            }).start();
+            scaleProgress.value = 0.95;
         };
 
         const onPressOut = () => {
-            Animated.timing(animatedScale, {
-                duration: 100,
-                toValue: 1,
-                useNativeDriver: true,
-            }).start();
+            scaleProgress.value = 1;
         };
 
         const handleOpacityChange = () => {
             if (disabled) {
-                Animated.timing(animatedOpacity, {
-                    duration: 200,
-                    toValue: 0.5,
-                    useNativeDriver: true,
-                }).start();
+                opacityProgress.value = 0.5;
             } else {
-                Animated.timing(animatedOpacity, {
-                    duration: 200,
-                    toValue: 1,
-                    useNativeDriver: true,
-                }).start();
+                opacityProgress.value = 1;
             }
         };
+
+        const animatedStyle = useAnimatedStyle(() => ({
+            transform: [
+                {
+                    scale: withTiming(scaleProgress.value, {
+                        duration: 1000,
+                        easing: Easing.out(Easing.exp),
+                    }),
+                },
+            ],
+            opacity: withTiming(opacityProgress.value, {
+                duration: 10,
+                easing: Easing.out(Easing.exp),
+            }),
+        }));
 
         useEffect(() => {
             handleOpacityChange();
@@ -90,22 +94,15 @@ const Button = forwardRef(
             <AnimatedPressable
                 style={[
                     styles.container,
-                    style as StyleProp<ViewStyle>,
+                    animatedStyle,
                     {
-                        transform: [
-                            {
-                                scale: animatedScale,
-                            },
-                        ],
-                    },
-                    {
-                        opacity: animatedOpacity,
                         pointerEvents: disabled ? 'none' : 'auto',
                         backgroundColor:
                             variant === 'secondary'
                                 ? palette.secondaryAccent
                                 : palette.primaryAccent,
                     },
+                    style as StyleProp<ViewStyle>,
                 ]}
                 onPress={onPress}
                 onPressIn={onPressIn}
@@ -118,7 +115,7 @@ const Button = forwardRef(
                         stroke={iconColor ?? palette.invertedOnAccent}
                     />
                 ) : null}
-                {showText ? (
+                {text && showText ? (
                     <Text
                         style={
                             [
@@ -161,6 +158,7 @@ const styling = () =>
             borderRadius: 8,
             justifyContent: 'center',
             alignItems: 'center',
+            width: '100%',
         },
         text: {
             textAlign: 'center',

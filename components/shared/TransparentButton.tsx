@@ -1,4 +1,10 @@
-import { View, Pressable, StyleSheet, Animated, PressableProps, StyleProp } from 'react-native';
+import { View, Pressable, StyleSheet, PressableProps, StyleProp } from 'react-native';
+import Reanimated, {
+    Easing,
+    useAnimatedStyle,
+    useSharedValue,
+    withTiming,
+} from 'react-native-reanimated';
 import Text from './Text';
 import { Colors } from '../../types';
 import { forwardRef, useRef } from 'react';
@@ -11,7 +17,7 @@ interface TransparentButtonProps extends PressableProps {
     iconSize?: number;
 }
 
-const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
+const AnimatedPressable = Reanimated.createAnimatedComponent(Pressable);
 
 const TransparentButton = forwardRef(
     (
@@ -28,23 +34,26 @@ const TransparentButton = forwardRef(
     ) => {
         const { palette } = useTheme();
         const styles = styling(palette);
-        const animatedScale = useRef(new Animated.Value(1)).current;
+        const scaleProgress = useSharedValue(1);
 
         const onPressIn = () => {
-            Animated.timing(animatedScale, {
-                duration: 100,
-                toValue: 0.97,
-                useNativeDriver: true,
-            }).start();
+            scaleProgress.value = 0.95;
         };
 
         const onPressOut = () => {
-            Animated.timing(animatedScale, {
-                duration: 100,
-                toValue: 1,
-                useNativeDriver: true,
-            }).start();
+            scaleProgress.value = 1;
         };
+
+        const animatedScale = useAnimatedStyle(() => ({
+            transform: [
+                {
+                    scale: withTiming(scaleProgress.value, {
+                        duration: 1000,
+                        easing: Easing.out(Easing.exp),
+                    }),
+                },
+            ],
+        }));
 
         return (
             <AnimatedPressable
@@ -58,12 +67,8 @@ const TransparentButton = forwardRef(
                                     : alignment === 'right'
                                     ? 'flex-end'
                                     : 'center',
-                            transform: [
-                                {
-                                    scale: animatedScale,
-                                },
-                            ],
                         },
+                        animatedScale,
                         style,
                     ] as any
                 }

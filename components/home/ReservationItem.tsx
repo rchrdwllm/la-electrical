@@ -1,8 +1,10 @@
 import { View, Pressable, StyleSheet } from 'react-native';
 import { Colors } from '../../types';
 import Reanimated, {
+    Easing,
     Extrapolate,
     interpolate,
+    interpolateColor,
     measure,
     runOnUI,
     useAnimatedReaction,
@@ -10,20 +12,25 @@ import Reanimated, {
     useAnimatedStyle,
     useDerivedValue,
     withSpring,
+    withTiming,
 } from 'react-native-reanimated';
 import ChevronDownIcon from '../../assets/icons/chevron-down-icon.svg';
+import CheckIcon from '../../assets/icons/check-icon.svg';
 import Text from '../shared/Text';
+import Button from '../shared/Button';
 import { useTheme } from '../../hooks/useTheme';
 import { useSharedValue } from 'react-native-reanimated';
-import Button from '../shared/Button';
+import { useState } from 'react';
 
 const ReservationItem = () => {
     const { theme, palette } = useTheme();
     const styles = styling(palette);
+    const [isPaid, setIsPaid] = useState(false);
+
     const dropdownRef = useAnimatedRef<Reanimated.View>();
     const heightValue = useSharedValue(0);
     const isToggled = useSharedValue(false);
-    const progress = useDerivedValue(
+    const heightProgress = useDerivedValue(
         () =>
             isToggled.value
                 ? withSpring(1, {
@@ -44,21 +51,47 @@ const ReservationItem = () => {
                   }),
         [theme]
     );
+    const colorProgress = useDerivedValue(
+        () =>
+            isPaid
+                ? withTiming(1, {
+                      duration: 250,
+                      easing: Easing.out(Easing.exp),
+                  })
+                : withTiming(0, {
+                      duration: 250,
+                      easing: Easing.in(Easing.exp),
+                  }),
+        [isPaid]
+    );
 
     const animatedRotate = useAnimatedStyle(() => ({
         transform: [
             {
-                rotate: `${progress.value * -180}deg`,
+                rotate: `${heightProgress.value * -180}deg`,
             },
         ],
     }));
 
     const animatedHeight = useAnimatedStyle(() => ({
-        height: interpolate(progress.value, [0, 1], [0, heightValue.value], Extrapolate.EXTEND),
+        height: interpolate(
+            heightProgress.value,
+            [0, 1],
+            [0, heightValue.value],
+            Extrapolate.EXTEND
+        ),
     }));
 
     const animatedOpacity = useAnimatedStyle(() => ({
-        opacity: interpolate(progress.value, [0, 1], [0, 1], Extrapolate.CLAMP),
+        opacity: interpolate(heightProgress.value, [0, 1], [0, 1], Extrapolate.CLAMP),
+    }));
+
+    const animatedColors = useAnimatedStyle(() => ({
+        backgroundColor: interpolateColor(
+            colorProgress.value,
+            [0, 1],
+            [palette.primaryAccent, palette.secondaryAccent]
+        ),
     }));
 
     const handleAnimate = () => {
@@ -89,7 +122,12 @@ const ReservationItem = () => {
                     <Reanimated.View ref={dropdownRef} style={[styles.dropdown, animatedOpacity]}>
                         <Button style={styles.dropdownBtn} text="Edit" />
                         <Button style={styles.dropdownBtn} text="Delete" />
-                        <Button variant="secondary" style={styles.dropdownBtn} text="Delete" />
+                        <Button
+                            onPress={() => setIsPaid(!isPaid)}
+                            style={[styles.dropdownBtn, animatedColors]}
+                            Icon={CheckIcon}
+                            iconColor={isPaid ? palette.primaryAccent : palette.invertedText}
+                        />
                     </Reanimated.View>
                 </Reanimated.View>
                 <Reanimated.View style={styles.separator}></Reanimated.View>
@@ -130,8 +168,8 @@ const styling = (palette: Colors) =>
             top: 0,
             left: 0,
             zIndex: 1,
-            flexDirection: 'row',
             flex: 1,
+            flexDirection: 'row',
             width: '100%',
             gap: 8,
             justifyContent: 'space-between',
@@ -139,6 +177,7 @@ const styling = (palette: Colors) =>
         },
         dropdownBtn: {
             flex: 1,
+            height: '100%',
         },
     });
 
