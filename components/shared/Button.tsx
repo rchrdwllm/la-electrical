@@ -19,7 +19,7 @@ import { ReactNode, forwardRef, useEffect, useRef } from 'react';
 import { useTheme } from '../../hooks/useTheme';
 
 interface ButtonProps extends PressableProps {
-    variant?: 'primary' | 'secondary';
+    variant?: 'primary' | 'secondary' | 'tertiary';
     textStyle?: StyleProp<Text>;
     text?: string;
     showText?: boolean;
@@ -100,7 +100,11 @@ const Button = forwardRef(
                         backgroundColor:
                             variant === 'secondary'
                                 ? palette.secondaryAccent
+                                : variant === 'tertiary'
+                                ? 'transparent'
                                 : palette.primaryAccent,
+                        paddingHorizontal: variant !== 'tertiary' ? 10 : 0,
+                        paddingVertical: variant !== 'tertiary' ? 12 : 0,
                     },
                     style as StyleProp<ViewStyle>,
                 ]}
@@ -122,7 +126,7 @@ const Button = forwardRef(
                                 styles.text,
                                 {
                                     color:
-                                        variant === 'secondary'
+                                        variant === 'secondary' || variant === 'tertiary'
                                             ? palette.primaryAccent
                                             : palette.invertedText,
                                 },
