@@ -2,37 +2,62 @@ import { View, StyleSheet } from 'react-native';
 import Text from '../shared/Text';
 import { Colors } from '../../types';
 import ReservationItem from './ReservationItem';
+import { ActivityIndicator } from 'react-native';
 import { Link } from 'expo-router';
 import { Reservation } from '../../types';
 import Button from '../shared/Button';
+import Reanimated, { FadeIn, FadeOut } from 'react-native-reanimated';
 import { useTheme } from '../../hooks/useTheme';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { fetchReservations } from '../../utils/reservations';
 
 const ReservationsSection = () => {
     const { palette } = useTheme();
     const styles = styling(palette);
     const [reservations, setReservations] = useState<Reservation[]>([]);
+    const [isLoading, setIsLoading] = useState(false);
 
     useEffect(() => {
-        fetchReservations().then(fetchedReservations => {
-            setReservations(fetchedReservations.splice(0, 3));
-        });
+        setIsLoading(true);
+
+        fetchReservations()
+            .then(fetchedReservations => {
+                setReservations(fetchedReservations.splice(0, 3));
+            })
+            .then(() => {
+                setIsLoading(false);
+            });
     }, []);
 
     return (
         <View>
             <Text fontWeight="medium">Reservations</Text>
-            <View style={styles.reservationsContainer}>
-                {reservations.map(reservation => (
-                    <ReservationItem key={reservation.id} {...reservation} />
-                ))}
-                <View style={styles.viewAllBtnContainer}>
-                    <Link asChild href="/reservations">
-                        <Button style={styles.viewAllBtn} text="View all" variant="tertiary" />
-                    </Link>
-                </View>
-            </View>
+            {isLoading ? (
+                <Reanimated.View
+                    key="loader"
+                    entering={FadeIn}
+                    exiting={FadeOut}
+                    style={styles.loadingContainer}
+                >
+                    <ActivityIndicator color={palette.primaryAccent} />
+                </Reanimated.View>
+            ) : (
+                <Reanimated.View
+                    key="reservations"
+                    entering={FadeIn}
+                    exiting={FadeOut}
+                    style={styles.reservationsContainer}
+                >
+                    {reservations.map(reservation => (
+                        <ReservationItem key={reservation.id} {...reservation} />
+                    ))}
+                    <View style={styles.viewAllBtnContainer}>
+                        <Link asChild href="/reservations">
+                            <Button style={styles.viewAllBtn} text="View all" variant="tertiary" />
+                        </Link>
+                    </View>
+                </Reanimated.View>
+            )}
         </View>
     );
 };
@@ -51,6 +76,11 @@ const styling = (palette: Colors) =>
             },
             shadowOpacity: 0.3,
             shadowRadius: 9.11,
+        },
+        loadingContainer: {
+            padding: 32,
+            justifyContent: 'center',
+            alignItems: 'center',
         },
         viewAllBtnContainer: {
             width: '100%',
