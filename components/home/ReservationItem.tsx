@@ -29,6 +29,7 @@ const ReservationItem = ({ reservationDate, name, typeOfService, isPaid, price }
 
     const dropdownRef = useAnimatedRef<Reanimated.View>();
     const heightValue = useSharedValue(0);
+    const scaleProgress = useSharedValue(1);
     const isToggled = useSharedValue(false);
     const heightProgress = useDerivedValue(
         () =>
@@ -94,6 +95,17 @@ const ReservationItem = ({ reservationDate, name, typeOfService, isPaid, price }
         ),
     }));
 
+    const animatedScale = useAnimatedStyle(() => ({
+        transform: [
+            {
+                scale: withTiming(scaleProgress.value, {
+                    duration: 1000,
+                    easing: Easing.out(Easing.exp),
+                }),
+            },
+        ],
+    }));
+
     const handleAnimate = () => {
         if (heightValue.value === 0) {
             runOnUI(() => {
@@ -106,9 +118,17 @@ const ReservationItem = ({ reservationDate, name, typeOfService, isPaid, price }
         isToggled.value = !isToggled.value;
     };
 
+    const onPressIn = () => {
+        scaleProgress.value = 0.95;
+    };
+
+    const onPressOut = () => {
+        scaleProgress.value = 1;
+    };
+
     return (
-        <Pressable onPress={handleAnimate}>
-            <Reanimated.View style={styles.container}>
+        <Pressable onPress={handleAnimate} onPressIn={onPressIn} onPressOut={onPressOut}>
+            <Reanimated.View style={[styles.container, animatedScale]}>
                 <View style={styles.flexContainer}>
                     <View style={styles.reservationDetails}>
                         <Text fontWeight="medium">{typeOfService}</Text>
