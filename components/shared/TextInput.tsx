@@ -1,13 +1,16 @@
 import { TextInput as RNTextInput, TextInputProps as RNTextInputProps } from 'react-native';
+import Reanimated, { AnimateProps } from 'react-native-reanimated';
 import { forwardRef } from 'react';
 import { useTheme } from '../../hooks/useTheme';
 import { useFonts, Lexend_300Light } from '@expo-google-fonts/lexend';
 
-interface TextInputProps extends RNTextInputProps {
+interface TextInputProps extends AnimateProps<RNTextInputProps> {
     style?: {};
 }
 
-const TextInput = (props: TextInputProps) => {
+const AnimatedTextInput = Reanimated.createAnimatedComponent(RNTextInput);
+
+const TextInput = forwardRef((props: TextInputProps, ref) => {
     const { palette } = useTheme();
     let [fontsLoaded, fontError] = useFonts({
         Lexend_300Light,
@@ -18,7 +21,8 @@ const TextInput = (props: TextInputProps) => {
     }
 
     return (
-        <RNTextInput
+        <AnimatedTextInput
+            ref={ref as any}
             style={[
                 {
                     paddingVertical: 12,
@@ -38,8 +42,11 @@ const TextInput = (props: TextInputProps) => {
             onChangeText={props.onChangeText}
             placeholder={props.placeholder}
             secureTextEntry={props.secureTextEntry}
+            layout={props.layout}
+            onFocus={props.onFocus}
+            autoFocus={props.autoFocus}
         />
     );
-};
+});
 
 export default TextInput;
