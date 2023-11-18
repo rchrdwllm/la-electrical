@@ -9,6 +9,7 @@ import {
     Platform,
 } from 'react-native';
 import Reanimated, {
+    AnimateProps,
     Easing,
     useAnimatedStyle,
     useSharedValue,
@@ -18,7 +19,7 @@ import Text from './Text';
 import { ReactNode, forwardRef, useEffect, useRef } from 'react';
 import { useTheme } from '../../hooks/useTheme';
 
-interface ButtonProps extends PressableProps {
+interface ButtonProps extends AnimateProps<PressableProps> {
     variant?: 'primary' | 'secondary' | 'tertiary';
     textStyle?: StyleProp<Text>;
     text?: string;
@@ -47,6 +48,9 @@ const Button = forwardRef(
             Icon,
             iconSize = 15,
             iconColor,
+            layout,
+            entering,
+            exiting,
         }: ButtonProps,
         _
     ) => {
@@ -111,6 +115,9 @@ const Button = forwardRef(
                 onPress={onPress}
                 onPressIn={onPressIn}
                 onPressOut={onPressOut}
+                layout={layout}
+                entering={entering}
+                exiting={exiting}
             >
                 {Icon ? (
                     <Icon
