@@ -29,6 +29,14 @@ const Layout = () => {
                 }}
             >
                 <Stack.Screen name="index" />
+                <Stack.Screen name="reservations" />
+                <Stack.Screen name="inventory" />
+                <Stack.Screen
+                    name="search"
+                    options={{
+                        animation: 'fade_from_bottom',
+                    }}
+                />
             </Stack>
         </Reanimated.View>
     );
