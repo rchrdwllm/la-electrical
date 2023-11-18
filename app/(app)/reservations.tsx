@@ -5,7 +5,7 @@ import { useTheme } from '../../hooks/useTheme';
 import { StatusBar, setStatusBarStyle } from 'expo-status-bar';
 import { useEffect } from 'react';
 
-const reservations = () => {
+const Reservations = () => {
     const { theme, palette } = useTheme();
     const styles = styling(palette);
 
@@ -36,4 +36,4 @@ const styling = (palette: Colors) =>
         },
     });
 
-export default reservations;
+export default Reservations;
