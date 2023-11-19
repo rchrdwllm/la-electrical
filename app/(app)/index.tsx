@@ -16,6 +16,7 @@ import { useEffect, useRef, useState } from 'react';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { StatusBar, setStatusBarStyle } from 'expo-status-bar';
 import { useWindowDimensions } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const Admin = () => {
     const [loading, setLoading] = useState(false);
@@ -39,6 +40,7 @@ const Admin = () => {
                 resolve('Logged out');
             }, 1000);
         });
+        await AsyncStorage.clear();
 
         setLoading(false);
         setUser(null);
