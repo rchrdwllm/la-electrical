@@ -197,6 +197,7 @@ const styling = (palette: Colors) =>
             },
             shadowOpacity: 0.3,
             shadowRadius: 9.11,
+            marginTop: 16,
         },
         main: {
             padding: 16,

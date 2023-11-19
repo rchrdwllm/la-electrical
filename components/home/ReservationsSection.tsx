@@ -9,7 +9,11 @@ import Button from '../shared/Button';
 import Reanimated, { FadeIn, FadeOut } from 'react-native-reanimated';
 import { useTheme } from '../../hooks/useTheme';
 import { useEffect, useState } from 'react';
-import { fetchReservations } from '../../utils/reservations';
+import {
+    fetchReservations,
+    getSavedReservations,
+    storeReservations,
+} from '../../utils/reservations';
 
 const ReservationsSection = () => {
     const { palette } = useTheme();
@@ -17,16 +21,26 @@ const ReservationsSection = () => {
     const [reservations, setReservations] = useState<Reservation[]>([]);
     const [isLoading, setIsLoading] = useState(false);
 
-    useEffect(() => {
+    const getReservations = async () => {
         setIsLoading(true);
 
-        fetchReservations()
-            .then(fetchedReservations => {
-                setReservations(fetchedReservations.splice(0, 3));
-            })
-            .then(() => {
-                setIsLoading(false);
-            });
+        const savedReservations = await getSavedReservations();
+
+        if (savedReservations) {
+            setReservations(savedReservations.splice(0, 3));
+        } else {
+            const reservations = await fetchReservations();
+
+            await storeReservations(reservations);
+
+            setReservations(reservations.splice(0, 3));
+        }
+
+        setIsLoading(false);
+    };
+
+    useEffect(() => {
+        getReservations();
     }, []);
 
     return (
