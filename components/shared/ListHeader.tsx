@@ -52,7 +52,6 @@ const styling = (palette: Colors) =>
     StyleSheet.create({
         container: {
             backgroundColor: palette.primaryBackground,
-            paddingHorizontal: 16,
             flexDirection: 'row',
             justifyContent: 'space-between',
             alignItems: 'center',
