@@ -7,6 +7,7 @@ import { StatusBar } from 'expo-status-bar';
 import { useTheme } from '../../hooks/useTheme';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useEffect, useRef, useState } from 'react';
+import { router } from 'expo-router';
 
 const Search = () => {
     const { palette } = useTheme();
@@ -14,6 +15,7 @@ const Search = () => {
     const { top } = useSafeAreaInsets();
     const [isFocused, setIsFocused] = useState(false);
     const textInputRef = useRef<RNTextInput>(null);
+    const [searchQuery, setSearchQuery] = useState('');
 
     useEffect(() => {
         Keyboard.addListener('keyboardDidHide', () => {
@@ -23,6 +25,15 @@ const Search = () => {
             }
         });
     }, []);
+
+    const handleCancel = () => {
+        setIsFocused(false);
+        textInputRef.current?.blur();
+
+        if (!searchQuery) {
+            router.back();
+        }
+    };
 
     return (
         <View
@@ -43,6 +54,8 @@ const Search = () => {
                         layout={Layout}
                         onFocus={() => setIsFocused(!isFocused)}
                         ref={textInputRef}
+                        value={searchQuery}
+                        onChangeText={setSearchQuery}
                         autoFocus
                     />
                     {isFocused && (
@@ -52,10 +65,7 @@ const Search = () => {
                             variant="tertiary"
                             text="Cancel"
                             style={styles.cancelBtn}
-                            onPress={() => {
-                                setIsFocused(false);
-                                textInputRef.current?.blur();
-                            }}
+                            onPress={handleCancel}
                         />
                     )}
                 </Reanimated.View>
