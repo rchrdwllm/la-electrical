@@ -1,3 +1,5 @@
+import { Timestamp } from 'firebase/firestore';
+
 export interface Colors {
     primaryText: string;
     secondaryText: string;
@@ -15,7 +17,7 @@ export interface Colors {
 }
 
 export interface Reservation {
-    reservationDate: string;
+    reservationDate: Timestamp;
     name: string;
     typeOfService: string;
     id: string;

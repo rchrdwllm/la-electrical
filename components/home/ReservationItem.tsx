@@ -142,7 +142,7 @@ const ReservationItem = ({ reservationDate, name, typeOfService, isPaid, price }
                     <Reanimated.View ref={dropdownRef} style={[styles.dropdown, animatedOpacity]}>
                         <View style={styles.details}>
                             <Text style={styles.date}>
-                                {new Date(reservationDate).toLocaleString()}
+                                {reservationDate.toDate().toDateString()}
                             </Text>
                             <Text
                                 fontWeight="medium"
