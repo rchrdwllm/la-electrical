@@ -9,29 +9,26 @@ import Button from '../shared/Button';
 import Reanimated, { FadeIn, FadeOut } from 'react-native-reanimated';
 import { useTheme } from '../../hooks/useTheme';
 import { useEffect, useState } from 'react';
-import {
-    fetchReservations,
-    getSavedReservations,
-    storeReservations,
-} from '../../utils/reservations';
+import { fetchReservations } from '../../utils/reservations';
 
 const ReservationsSection = () => {
     const { palette } = useTheme();
     const styles = styling(palette);
-    const [reservations, setReservations] = useState<Reservation[]>([]);
     const [isLoading, setIsLoading] = useState(false);
+    const [reservations, setReservations] = useState<Reservation[]>([]);
 
-    const getReservations = async () => {
+    const fetchData = async () => {
         setIsLoading(true);
 
-        const reservations = await fetchReservations();
+        await fetchReservations(setReservations);
 
-        setReservations(reservations.filter(reservation => !reservation.isPaid).splice(0, 3));
-        setIsLoading(false);
+        setTimeout(() => {
+            setIsLoading(false);
+        }, 1250);
     };
 
     useEffect(() => {
-        getReservations();
+        fetchData();
     }, []);
 
     return (

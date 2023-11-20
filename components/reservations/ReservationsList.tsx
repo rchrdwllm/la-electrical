@@ -19,9 +19,8 @@ const ReservationsList = () => {
     const getReservations = async () => {
         setIsLoading(true);
 
-        const reservations = await fetchReservations();
+        await fetchReservations(setReservations);
 
-        setReservations(reservations);
         setIsLoading(false);
     };
 
