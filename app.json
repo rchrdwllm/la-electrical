@@ -1,8 +1,8 @@
 {
     "expo": {
-        "name": "la-electrical-starter",
-        "slug": "la-electrical-starter",
-        "scheme": "la-electrical-starter",
+        "name": "la-electrical",
+        "slug": "la-electrical",
+        "scheme": "la-electrical",
         "version": "1.0.0",
         "orientation": "portrait",
         "icon": "./assets/icon.png",
