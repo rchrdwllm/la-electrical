@@ -1,18 +1,12 @@
-import { StyleSheet, View } from 'react-native';
-import { Colors, Reservation } from '../../types';
-import { FlashList } from '@shopify/flash-list';
+import { FlatList, StyleSheet, View } from 'react-native';
+import { Reservation } from '../../types';
 import ReservationRenderItem from './ReservationRenderItem';
 import SectionHeader from './SectionHeader';
 import ListEmptyLoader from '../shared/ListEmptyLoader';
 import ListHeader from '../shared/ListHeader';
 import TextInput from '../shared/TextInput';
 import { useEffect, useMemo, useState } from 'react';
-import {
-    fetchReservations,
-    getSavedReservations,
-    groupByPayment,
-    storeReservations,
-} from '../../utils/reservations';
+import { fetchReservations, groupByPayment } from '../../utils/reservations';
 
 const ReservationsList = () => {
     const styles = styling();
@@ -39,7 +33,7 @@ const ReservationsList = () => {
         <View style={styles.container}>
             {isLoading && <ListEmptyLoader />}
             <View style={styles.listContainer}>
-                <FlashList
+                <FlatList
                     data={groupedReservations}
                     renderItem={({ item }) => {
                         if (typeof item === 'string') {
@@ -49,17 +43,14 @@ const ReservationsList = () => {
                         }
                     }}
                     keyExtractor={(item, index) => JSON.stringify(item) + index}
-                    getItemType={item => {
-                        return typeof item === 'string' ? 'section-header' : 'reservation';
-                    }}
                     contentContainerStyle={{
                         paddingHorizontal: 16,
                         paddingBottom: 32,
                     }}
+                    initialNumToRender={10}
                     ListHeaderComponentStyle={{
                         gap: 16,
                     }}
-                    estimatedItemSize={162}
                     ListHeaderComponent={() => (
                         <>
                             <ListHeader />

@@ -26,7 +26,7 @@ const ReservationsSection = () => {
 
         const reservations = await fetchReservations();
 
-        setReservations(reservations.splice(0, 3));
+        setReservations(reservations.filter(reservation => !reservation.isPaid).splice(0, 3));
         setIsLoading(false);
     };
 

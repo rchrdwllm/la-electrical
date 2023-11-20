@@ -14,16 +14,12 @@ export const fetchReservations = async () => {
 };
 
 export const groupByPayment = (reservations: Reservation[]) => {
-    const paidReservations: (string | Reservation)[] = [];
-    const unpaidReservations: (string | Reservation)[] = [];
-
-    reservations.forEach(reservation => {
-        if (reservation.isPaid) {
-            paidReservations.push(reservation);
-        } else {
-            unpaidReservations.push(reservation);
-        }
-    });
+    const paidReservations: (string | Reservation)[] = reservations.filter(
+        reservation => reservation.isPaid
+    );
+    const unpaidReservations: (string | Reservation)[] = reservations.filter(
+        reservation => !reservation.isPaid
+    );
 
     paidReservations.unshift('Paid reservations');
     unpaidReservations.unshift('Pending payment');
