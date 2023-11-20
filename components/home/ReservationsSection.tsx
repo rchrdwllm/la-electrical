@@ -24,18 +24,9 @@ const ReservationsSection = () => {
     const getReservations = async () => {
         setIsLoading(true);
 
-        const savedReservations = await getSavedReservations();
+        const reservations = await fetchReservations();
 
-        if (savedReservations) {
-            setReservations(savedReservations.splice(0, 3));
-        } else {
-            const reservations = await fetchReservations();
-
-            await storeReservations(reservations);
-
-            setReservations(reservations.splice(0, 3));
-        }
-
+        setReservations(reservations.splice(0, 3));
         setIsLoading(false);
     };
 

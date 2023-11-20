@@ -25,17 +25,10 @@ const ReservationsList = () => {
     const getReservations = async () => {
         setIsLoading(true);
 
-        const savedReservations = await getSavedReservations();
+        const reservations = await fetchReservations();
 
-        if (savedReservations) {
-            setReservations(savedReservations);
-        } else {
-            const reservations = await fetchReservations();
-
-            setReservations(reservations);
-
-            await storeReservations(reservations);
-        }
+        setReservations(reservations);
+        setIsLoading(false);
     };
 
     useEffect(() => {
@@ -66,14 +59,13 @@ const ReservationsList = () => {
                     ListHeaderComponentStyle={{
                         gap: 16,
                     }}
-                    estimatedItemSize={50}
+                    estimatedItemSize={162}
                     ListHeaderComponent={() => (
                         <>
                             <ListHeader />
                             <TextInput placeholder="Search reservations" />
                         </>
                     )}
-                    onLoad={() => setIsLoading(false)}
                 />
             </View>
         </View>
