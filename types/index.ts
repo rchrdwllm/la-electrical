@@ -15,11 +15,10 @@ export interface Colors {
 }
 
 export interface Reservation {
-    createdAt: string;
     reservationDate: string;
     name: string;
     typeOfService: string;
     id: string;
     isPaid: boolean;
-    price: string;
+    price: number;
 }
