@@ -199,7 +199,7 @@ const styling = (palette: Colors) =>
         },
         dropdown: {
             paddingHorizontal: 16,
-            paddingBottom: 16,
+            paddingBottom: 8,
             position: 'absolute',
             top: 0,
             left: 0,
