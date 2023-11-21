@@ -2,7 +2,7 @@ import { FlatList, StyleSheet, View } from 'react-native';
 import { Reservation } from '../../types';
 import ReservationRenderItem from './ReservationRenderItem';
 import SectionHeader from './SectionHeader';
-import ListEmptyLoader from '../shared/ListEmptyLoader';
+import ScreenLoader from '../shared/ScreenLoader';
 import ListHeader from '../shared/ListHeader';
 import TextInput from '../shared/TextInput';
 import { useEffect, useMemo, useState } from 'react';
@@ -30,7 +30,7 @@ const ReservationsList = () => {
 
     return (
         <View style={styles.container}>
-            {isLoading && <ListEmptyLoader />}
+            {isLoading && <ScreenLoader />}
             <View style={styles.listContainer}>
                 <FlatList
                     data={groupedReservations}
