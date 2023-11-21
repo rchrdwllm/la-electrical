@@ -25,7 +25,7 @@ const ReservationsList = () => {
         setTimeout(() => {
             setIsLoading(false);
             setRefreshing(false);
-        }, 100);
+        }, 1250);
     };
 
     const onRefresh = () => {
