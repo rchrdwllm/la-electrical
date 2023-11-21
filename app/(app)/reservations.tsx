@@ -1,6 +1,7 @@
 import { View, StyleSheet } from 'react-native';
 import { Colors } from '../../types';
 import ReservationsList from '../../components/reservations/ReservationsList';
+import NewButton from '../../components/shared/NewButton';
 import { useTheme } from '../../hooks/useTheme';
 import { StatusBar, setStatusBarStyle } from 'expo-status-bar';
 import { useEffect } from 'react';
@@ -29,6 +30,7 @@ const Reservations = () => {
                 ]}
             ></View>
             <ReservationsList />
+            <NewButton />
         </View>
     );
 };
