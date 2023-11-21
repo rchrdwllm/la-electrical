@@ -7,6 +7,7 @@ import { Link } from 'expo-router';
 import { Reservation } from '../../types';
 import Button from '../shared/Button';
 import Reanimated, { FadeIn, FadeOut } from 'react-native-reanimated';
+import ListEmpty from '../shared/ListEmpty';
 import { useTheme } from '../../hooks/useTheme';
 import { useEffect, useState } from 'react';
 import { fetchReservations } from '../../utils/reservations';
@@ -43,7 +44,7 @@ const ReservationsSection = () => {
                 >
                     <ActivityIndicator color={palette.primaryAccent} />
                 </Reanimated.View>
-            ) : (
+            ) : reservations.length ? (
                 <Reanimated.View
                     key="reservations"
                     entering={FadeIn}
@@ -59,6 +60,8 @@ const ReservationsSection = () => {
                         </Link>
                     </View>
                 </Reanimated.View>
+            ) : (
+                <ListEmpty />
             )}
         </View>
     );
