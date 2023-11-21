@@ -7,7 +7,7 @@ import Reanimated, {
 } from 'react-native-reanimated';
 import Text from './Text';
 import { Colors } from '../../types';
-import { forwardRef, useRef } from 'react';
+import { forwardRef } from 'react';
 import { useTheme } from '../../hooks/useTheme';
 
 interface TransparentButtonProps extends PressableProps {
@@ -15,6 +15,8 @@ interface TransparentButtonProps extends PressableProps {
     alignment?: 'left' | 'center' | 'right';
     textStyle?: StyleProp<Text>;
     iconSize?: number;
+    iconColor?: string;
+    textShown?: boolean;
 }
 
 const AnimatedPressable = Reanimated.createAnimatedComponent(Pressable);
@@ -28,7 +30,9 @@ const TransparentButton = forwardRef(
             style,
             textStyle,
             iconSize = 16,
+            iconColor,
             onPress,
+            textShown = true,
         }: TransparentButtonProps,
         _
     ) => {
@@ -79,13 +83,15 @@ const TransparentButton = forwardRef(
                 {Icon ? (
                     <View>
                         <Icon
-                            stroke={palette.invertedOnAccent}
+                            stroke={iconColor ?? palette.invertedOnAccent}
                             height={iconSize}
                             width={iconSize}
                         />
                     </View>
                 ) : null}
-                <Text style={[styles.text, textStyle] as any}>{children as any}</Text>
+                {textShown && (
+                    <Text style={[styles.text, textStyle] as any}>{children as any}</Text>
+                )}
             </AnimatedPressable>
         );
     }
