@@ -159,7 +159,9 @@ const ReservationRenderItem = ({
                     <Text style={styles.reservationCustomer}>{name}</Text>
                 </View>
                 <View style={styles.flexContainer_2}>
-                    <Text style={styles.date}>{reservationDate.toDate().toDateString()}</Text>
+                    <Text style={styles.date}>{`${reservationDate
+                        .toDate()
+                        .toDateString()} ${reservationDate.toDate().toLocaleTimeString()}`}</Text>
                     <Reanimated.View style={animatedRotate}>
                         <ChevronDownIcon height={20} width={20} stroke={palette.primaryText} />
                     </Reanimated.View>
