@@ -8,10 +8,12 @@ export interface Colors {
     primaryBackground: string;
     secondaryBackground: string;
     overlayPrimaryBackground: string;
+    overlayInvertedBackground: string;
     primaryAccent: string;
     secondaryAccent: string;
     primaryBorder: string;
     primaryShadow: string;
+    accentShadow: string;
     success: string;
     warning: string;
 }
