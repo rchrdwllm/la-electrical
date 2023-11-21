@@ -16,7 +16,7 @@ import Reanimated, {
     withTiming,
 } from 'react-native-reanimated';
 import Text from './Text';
-import { ReactNode, forwardRef, useEffect, useRef } from 'react';
+import { ReactNode, forwardRef, useEffect } from 'react';
 import { useTheme } from '../../hooks/useTheme';
 
 interface ButtonProps extends AnimateProps<PressableProps> {
@@ -108,7 +108,8 @@ const Button = forwardRef(
                                 ? 'transparent'
                                 : palette.primaryAccent,
                         paddingHorizontal: variant !== 'tertiary' ? 10 : 0,
-                        paddingVertical: variant !== 'tertiary' ? 12 : 0,
+                        paddingVertical:
+                            variant !== 'tertiary' ? (Platform.OS === 'android' ? 15 : 12) : 0,
                     },
                     style as StyleProp<ViewStyle>,
                 ]}
@@ -166,7 +167,7 @@ const styling = () =>
         container: {
             paddingVertical: 12,
             paddingHorizontal: 10,
-            borderRadius: 8,
+            borderRadius: 10,
             justifyContent: 'center',
             alignItems: 'center',
             width: '100%',
