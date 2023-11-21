@@ -1,4 +1,4 @@
-import { View, Pressable, StyleSheet } from 'react-native';
+import { View, Pressable, StyleSheet, Alert } from 'react-native';
 import { Colors } from '../../types';
 import Reanimated, {
     Easing,
@@ -21,6 +21,7 @@ import { Reservation } from '../../types';
 import { useTheme } from '../../hooks/useTheme';
 import { useSharedValue } from 'react-native-reanimated';
 import { useState } from 'react';
+import { deleteReservation } from '../../utils/reservations';
 
 const ReservationRenderItem = ({
     reservationDate,
@@ -28,10 +29,12 @@ const ReservationRenderItem = ({
     typeOfService,
     isPaid,
     price,
+    id,
 }: Reservation) => {
     const { theme, palette } = useTheme();
     const styles = styling(palette);
     const [paid, setPaid] = useState(isPaid);
+    const [deleteLoading, setDeleteLoading] = useState(false);
 
     const dropdownRef = useAnimatedRef<Reanimated.View>();
     const heightValue = useSharedValue(0);
@@ -132,6 +135,27 @@ const ReservationRenderItem = ({
         scaleProgress.value = 1;
     };
 
+    const handleDelete = () => {
+        setDeleteLoading(true);
+
+        Alert.alert('Delete reservation', 'Are you sure you want to delete this reservation?', [
+            {
+                text: 'Cancel',
+                style: 'cancel',
+                onPress: () => setDeleteLoading(false),
+            },
+            {
+                text: 'Delete',
+                style: 'destructive',
+                onPress: async () => {
+                    await deleteReservation(id);
+
+                    setDeleteLoading(false);
+                },
+            },
+        ]);
+    };
+
     return (
         <Pressable onPress={handleAnimate} onPressIn={onPressIn} onPressOut={onPressOut}>
             <Reanimated.View style={[styles.container, animatedScale]}>
@@ -176,7 +200,11 @@ const ReservationRenderItem = ({
                     <Reanimated.View ref={dropdownRef} style={[styles.dropdown, animatedOpacity]}>
                         <View style={styles.dropdownBtns}>
                             <Button style={styles.dropdownBtn} text="Edit" />
-                            <Button style={styles.dropdownBtn} text="Delete" />
+                            <Button
+                                style={styles.dropdownBtn}
+                                onPress={handleDelete}
+                                text="Delete"
+                            />
                             <Button
                                 onPress={() => setPaid(!paid)}
                                 style={[styles.dropdownBtn, animatedColors]}
