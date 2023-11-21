@@ -9,10 +9,15 @@ import Button from '../shared/Button';
 import Reanimated, { FadeIn, FadeOut } from 'react-native-reanimated';
 import ListEmpty from '../shared/ListEmpty';
 import { useTheme } from '../../hooks/useTheme';
-import { useEffect, useState } from 'react';
+import { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import { fetchReservations } from '../../utils/reservations';
 
-const ReservationsSection = () => {
+interface ReservationsSectionProps {
+    refreshing: boolean;
+    setRefreshing: Dispatch<SetStateAction<boolean>>;
+}
+
+const ReservationsSection = ({ refreshing, setRefreshing }: ReservationsSectionProps) => {
     const { palette } = useTheme();
     const styles = styling(palette);
     const [isLoading, setIsLoading] = useState(false);
@@ -25,12 +30,19 @@ const ReservationsSection = () => {
 
         setTimeout(() => {
             setIsLoading(false);
+            setRefreshing(false);
         }, 1250);
     };
 
     useEffect(() => {
         fetchData();
     }, []);
+
+    useEffect(() => {
+        if (refreshing) {
+            fetchData();
+        }
+    }, [refreshing]);
 
     return (
         <View>

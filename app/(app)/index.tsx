@@ -1,5 +1,12 @@
-import { View, StyleSheet, Image, Pressable, Animated, ActivityIndicator } from 'react-native';
-import Button from '../../components/shared/Button';
+import {
+    View,
+    StyleSheet,
+    Image,
+    Pressable,
+    Animated,
+    ActivityIndicator,
+    RefreshControl,
+} from 'react-native';
 import Text from '../../components/shared/Text';
 import { Colors } from '../../types';
 import TransparentButton from '../../components/shared/TransparentButton';
@@ -15,13 +22,14 @@ import { signOut } from 'firebase/auth';
 import { firebaseAuth } from '../../config/firebase';
 import { useAuth } from '../../hooks/useAuth';
 import { useTheme } from '../../hooks/useTheme';
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { StatusBar, setStatusBarStyle } from 'expo-status-bar';
 import { useWindowDimensions } from 'react-native';
 
 const Admin = () => {
     const [loading, setLoading] = useState(false);
+    const [refreshing, setRefreshing] = useState(false);
     const [user, setUser] = useAuth();
     const { theme, palette } = useTheme();
     const styles = styling(palette);
@@ -48,6 +56,10 @@ const Admin = () => {
         setUser(null);
     };
 
+    const onRefresh = useCallback(() => {
+        setRefreshing(true);
+    }, []);
+
     useEffect(() => {
         if (theme === 'dark') {
             setStatusBarStyle('light');
@@ -70,6 +82,13 @@ const Admin = () => {
                 ]}
             ></Animated.View>
             <Animated.ScrollView
+                refreshControl={
+                    <RefreshControl
+                        colors={[palette.primaryAccent]}
+                        refreshing={refreshing}
+                        onRefresh={onRefresh}
+                    />
+                }
                 onScroll={Animated.event(
                     [
                         {
@@ -206,7 +225,7 @@ const Admin = () => {
                         },
                     ]}
                 >
-                    <ReservationsSection />
+                    <ReservationsSection refreshing={refreshing} setRefreshing={setRefreshing} />
                 </View>
             </Animated.ScrollView>
             <NewButton />

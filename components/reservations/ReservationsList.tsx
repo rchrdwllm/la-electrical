@@ -1,4 +1,4 @@
-import { FlatList, StyleSheet, View } from 'react-native';
+import { FlatList, RefreshControl, StyleSheet, View } from 'react-native';
 import { Reservation } from '../../types';
 import ReservationRenderItem from './ReservationRenderItem';
 import SectionHeader from './SectionHeader';
@@ -11,6 +11,7 @@ import { fetchReservations, groupByPayment } from '../../utils/reservations';
 const ReservationsList = () => {
     const styles = styling();
     const [isLoading, setIsLoading] = useState(true);
+    const [refreshing, setRefreshing] = useState(false);
     const [reservations, setReservations] = useState<Reservation[]>([]);
     const groupedReservations: (string | Reservation)[] = useMemo(() => {
         return groupByPayment(reservations);
@@ -22,17 +23,31 @@ const ReservationsList = () => {
         await fetchReservations(setReservations);
 
         setIsLoading(false);
+        setRefreshing(false);
+    };
+
+    const onRefresh = () => {
+        setRefreshing(true);
     };
 
     useEffect(() => {
         getReservations();
     }, []);
 
+    useEffect(() => {
+        if (refreshing) {
+            getReservations();
+        }
+    }, [refreshing]);
+
     return (
         <View style={styles.container}>
             {isLoading && <ScreenLoader />}
             <View style={styles.listContainer}>
                 <FlatList
+                    refreshControl={
+                        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+                    }
                     data={groupedReservations}
                     renderItem={({ item }) => {
                         if (typeof item === 'string') {
