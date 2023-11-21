@@ -1,4 +1,4 @@
-import { View, StyleSheet, Image, Pressable, Animated } from 'react-native';
+import { View, StyleSheet, Image, Pressable, Animated, ActivityIndicator } from 'react-native';
 import Button from '../../components/shared/Button';
 import Text from '../../components/shared/Text';
 import { Colors } from '../../types';
@@ -7,6 +7,9 @@ import ArchiveIcon from '../../assets/icons/archive-icon.svg';
 import CardStackIcon from '../../assets/icons/card-stack-icon.svg';
 import TextInput from '../../components/shared/TextInput';
 import ReservationsSection from '../../components/home/ReservationsSection';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import NewButton from '../../components/shared/NewButton';
+import LogoutIcon from '../../assets/icons/logout-icon.svg';
 import { Link, router } from 'expo-router';
 import { signOut } from 'firebase/auth';
 import { firebaseAuth } from '../../config/firebase';
@@ -16,7 +19,6 @@ import { useEffect, useRef, useState } from 'react';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { StatusBar, setStatusBarStyle } from 'expo-status-bar';
 import { useWindowDimensions } from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const Admin = () => {
     const [loading, setLoading] = useState(false);
@@ -142,10 +144,33 @@ const Admin = () => {
                             },
                         ]}
                     >
-                        <Image
-                            style={styles.headerLogo}
-                            source={require('../../assets/logo_light.png')}
-                        />
+                        <View style={styles.headerFlexContainer}>
+                            <Image
+                                style={styles.headerLogo}
+                                source={require('../../assets/logo_light.png')}
+                            />
+                            <View>
+                                {loading ? (
+                                    <View style={styles.logoutBtnIndicator}>
+                                        <ActivityIndicator
+                                            size={16}
+                                            color={palette.invertedOnAccent}
+                                        />
+                                    </View>
+                                ) : (
+                                    <TransparentButton
+                                        style={styles.logoutBtn}
+                                        textStyle={
+                                            {
+                                                display: 'none',
+                                            } as any
+                                        }
+                                        Icon={LogoutIcon}
+                                        onPress={handleSignOut}
+                                    />
+                                )}
+                            </View>
+                        </View>
                         <Text fontWeight="bold" style={styles.greeting}>
                             Hello, Admin!
                         </Text>
@@ -182,16 +207,9 @@ const Admin = () => {
                     ]}
                 >
                     <ReservationsSection />
-                    <Text>Email: {user.email}</Text>
-                    <Button
-                        text="Sign out"
-                        showText={!loading}
-                        disabled={loading}
-                        loading={loading}
-                        onPress={handleSignOut}
-                    />
                 </View>
             </Animated.ScrollView>
+            <NewButton />
         </View>
     );
 };
@@ -210,9 +228,6 @@ const styling = (palette: Colors) =>
             backgroundColor: palette.primaryBackground,
             zIndex: 2,
         },
-        logoutBtn: {
-            width: '100%',
-        },
         header: {
             position: 'relative',
             justifyContent: 'center',
@@ -222,6 +237,19 @@ const styling = (palette: Colors) =>
             height: 32,
             width: 32,
             alignSelf: 'center',
+        },
+        logoutBtn: {
+            borderRadius: 16,
+            height: 32,
+            width: 32,
+        },
+        logoutBtnIndicator: {
+            borderRadius: 16,
+            height: 32,
+            width: 32,
+            justifyContent: 'center',
+            alignItems: 'center',
+            backgroundColor: palette.overlayPrimaryBackground,
         },
         headerBg: {
             width: '150%',
@@ -245,6 +273,11 @@ const styling = (palette: Colors) =>
             right: 16,
             bottom: 16,
             gap: 16,
+        },
+        headerFlexContainer: {
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            alignItems: 'center',
         },
         searchInputContainer: {
             pointerEvents: 'none',
