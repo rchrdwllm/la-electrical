@@ -22,8 +22,10 @@ const ReservationsList = () => {
 
         await fetchReservations(setReservations);
 
-        setIsLoading(false);
-        setRefreshing(false);
+        setTimeout(() => {
+            setIsLoading(false);
+            setRefreshing(false);
+        }, 100);
     };
 
     const onRefresh = () => {
