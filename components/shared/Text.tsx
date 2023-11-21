@@ -1,4 +1,4 @@
-import { Text as RNText, TextProps as RNTextProps, TextStyle } from 'react-native';
+import { Text as RNText, TextProps as RNTextProps, TextStyle, StyleProp } from 'react-native';
 import Reanimated, { AnimateProps } from 'react-native-reanimated';
 import {
     useFonts,
@@ -12,7 +12,7 @@ import { forwardRef } from 'react';
 interface TextProps extends RNTextProps {
     variant?: 'primaryText' | 'secondaryText';
     fontWeight?: 'regular' | 'medium' | 'bold';
-    style?: TextStyle;
+    style?: StyleProp<TextStyle> | StyleProp<TextStyle>[];
 }
 
 const Text = forwardRef(({ children, variant, fontWeight, style }: TextProps, ref) => {
