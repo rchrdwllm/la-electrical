@@ -37,6 +37,7 @@ const Layout = () => {
                         animation: 'fade_from_bottom',
                     }}
                 />
+                <Stack.Screen name="new" />
             </Stack>
         </Reanimated.View>
     );
