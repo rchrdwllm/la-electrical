@@ -118,7 +118,15 @@ const New = () => {
                 <Button
                     text={
                         reservationDate
-                            ? `${reservationDate.toDateString()} ${reservationDate.toLocaleTimeString()}`
+                            ? `${Intl.DateTimeFormat(navigator.language, {
+                                  weekday: 'long',
+                                  month: 'short',
+                                  day: 'numeric',
+                              }).format(reservationDate)} ${Intl.DateTimeFormat('en', {
+                                  hour: 'numeric',
+                                  minute: 'numeric',
+                                  hour12: true,
+                              }).format(new Date(reservationDate))}`
                             : 'Pick a date'
                     }
                     style={{

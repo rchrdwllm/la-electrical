@@ -159,9 +159,15 @@ const ReservationRenderItem = ({
                     <Text style={styles.reservationCustomer}>{name}</Text>
                 </View>
                 <View style={styles.flexContainer_2}>
-                    <Text style={styles.date}>{`${reservationDate
-                        .toDate()
-                        .toDateString()} ${reservationDate.toDate().toLocaleTimeString()}`}</Text>
+                    <Text style={styles.date}>{`${Intl.DateTimeFormat(navigator.language, {
+                        weekday: 'long',
+                        month: 'short',
+                        day: 'numeric',
+                    }).format(reservationDate.toDate())} ${Intl.DateTimeFormat('en', {
+                        hour: 'numeric',
+                        minute: 'numeric',
+                        hour12: true,
+                    }).format(new Date(reservationDate.toDate()))}`}</Text>
                     <Reanimated.View style={animatedRotate}>
                         <ChevronDownIcon height={20} width={20} stroke={palette.primaryText} />
                     </Reanimated.View>
