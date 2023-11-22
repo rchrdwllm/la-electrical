@@ -8,8 +8,10 @@ import TextInput from '../shared/TextInput';
 import { useMemo } from 'react';
 import { groupByPayment } from '../../utils/reservations';
 import { useReservationsStore } from '../../zustand/store';
+import { useTheme } from '../../hooks/useTheme';
 
 const ReservationsList = () => {
+    const { palette } = useTheme();
     const styles = styling();
     const { reservations, isLoading, isRefreshing, setIsRefreshing } = useReservationsStore();
     const groupedReservations: (string | Reservation)[] = useMemo(() => {
@@ -25,6 +27,8 @@ const ReservationsList = () => {
                         <RefreshControl
                             refreshing={isRefreshing}
                             onRefresh={() => setIsRefreshing(true)}
+                            colors={[palette.primaryAccent]}
+                            progressBackgroundColor={palette.primaryBackground}
                         />
                     }
                     data={groupedReservations}

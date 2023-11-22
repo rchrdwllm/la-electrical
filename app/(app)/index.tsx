@@ -101,6 +101,7 @@ const Admin = () => {
                 refreshControl={
                     <RefreshControl
                         colors={[palette.primaryAccent]}
+                        progressBackgroundColor={palette.primaryBackground}
                         refreshing={isRefreshing}
                         onRefresh={() => setIsRefreshing(true)}
                     />
