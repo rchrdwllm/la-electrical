@@ -25,6 +25,7 @@ interface ButtonProps extends AnimateProps<PressableProps> {
     text?: string;
     showText?: boolean;
     loading?: boolean;
+    loadingColor?: string;
     disabled?: boolean;
     Icon?: any;
     iconSize?: number;
@@ -44,6 +45,7 @@ const Button = forwardRef(
             text,
             showText = true,
             loading,
+            loadingColor,
             disabled,
             Icon,
             iconSize = 15,
@@ -153,7 +155,7 @@ const Button = forwardRef(
                             alignItems: 'center',
                         }}
                     >
-                        <ActivityIndicator color={palette.invertedText} size={14} />
+                        <ActivityIndicator color={loadingColor ?? palette.invertedText} size={14} />
                     </View>
                 ) : null}
                 {children as ReactNode}

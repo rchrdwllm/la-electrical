@@ -176,6 +176,7 @@ const New = () => {
                     disabled={isLoading}
                     loading={isLoading}
                     showText={!isLoading}
+                    loadingColor={palette.primaryAccent}
                 />
             </View>
         </View>
