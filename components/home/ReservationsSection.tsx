@@ -22,15 +22,17 @@ const ReservationsSection = ({ refreshing, setRefreshing }: ReservationsSectionP
     const styles = styling(palette);
     const [isLoading, setIsLoading] = useState(false);
     const [reservations, setReservations] = useState<Reservation[]>([]);
+    const [noData, setNoData] = useState(false);
 
     const fetchData = async () => {
         setIsLoading(true);
 
-        await fetchReservations(setReservations);
+        const noData = await fetchReservations(setReservations);
 
         setTimeout(() => {
             setIsLoading(false);
             setRefreshing(false);
+            setNoData(noData);
         }, 1250);
     };
 
@@ -73,7 +75,7 @@ const ReservationsSection = ({ refreshing, setRefreshing }: ReservationsSectionP
                     </View>
                 </Reanimated.View>
             ) : (
-                <ListEmpty />
+                noData && <ListEmpty />
             )}
         </View>
     );
