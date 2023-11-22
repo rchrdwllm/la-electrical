@@ -4,8 +4,8 @@ import {
     StyleSheet,
     StyleProp,
     ViewStyle,
-    TextStyle,
     Platform,
+    FlatList,
 } from 'react-native';
 import { Colors } from '../../types';
 import Reanimated, {
@@ -148,23 +148,28 @@ const Select = ({ data, style, onChange, placeholder = 'Select' }: SelectProps) 
                 </View>
                 <Reanimated.View style={[styles.dropdownContainer, animatedHeight]}>
                     <Reanimated.View ref={dropdownRef} style={[styles.dropdown, animatedOpacity]}>
-                        {data.map(item => (
-                            <Button
-                                text={item}
-                                key={item}
-                                textStyle={
-                                    {
-                                        textAlign: 'left',
-                                        opacity: 0.75,
-                                    } as any
-                                }
-                                style={{
-                                    paddingHorizontal: 0,
-                                    backgroundColor: 'transparent',
-                                }}
-                                onPress={() => handleChange(item)}
-                            />
-                        ))}
+                        <FlatList
+                            style={styles.dropdownList}
+                            data={data}
+                            renderItem={({ item }) => (
+                                <Button
+                                    text={item}
+                                    key={item}
+                                    textStyle={
+                                        {
+                                            textAlign: 'left',
+                                            opacity: 0.75,
+                                        } as any
+                                    }
+                                    style={{
+                                        paddingHorizontal: 0,
+                                        backgroundColor: 'transparent',
+                                    }}
+                                    onPress={() => handleChange(item)}
+                                />
+                            )}
+                            keyExtractor={item => item}
+                        />
                     </Reanimated.View>
                 </Reanimated.View>
             </Reanimated.View>
@@ -202,6 +207,9 @@ const styling = (palette: Colors) =>
             zIndex: 1,
             flex: 1,
             width: '100%',
+        },
+        dropdownList: {
+            maxHeight: 200,
         },
     });
 

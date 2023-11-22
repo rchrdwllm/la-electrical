@@ -21,7 +21,14 @@ const New = () => {
     const [typeOfService, setTypeOfService] = useState('');
     const [modeOfPayment, setModeOfPayment] = useState('');
 
-    const services = ['Alternator repair', 'Battery replacement', 'Brake pads replacement'];
+    const services = [
+        'Alternator repair',
+        'Battery replacement',
+        'Brake pads replacement',
+        'Brake rotor replacement',
+        'Car battery replacement',
+        'Car door mirror replacement',
+    ];
     const modesOfPayment = ['Cash', 'GCash'];
 
     useEffect(() => {
