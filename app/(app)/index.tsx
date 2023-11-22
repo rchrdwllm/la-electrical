@@ -8,7 +8,7 @@ import {
     RefreshControl,
 } from 'react-native';
 import Text from '../../components/shared/Text';
-import { Colors } from '../../types';
+import { Colors, Reservation } from '../../types';
 import TransparentButton from '../../components/shared/TransparentButton';
 import ArchiveIcon from '../../assets/icons/archive-icon.svg';
 import CardStackIcon from '../../assets/icons/card-stack-icon.svg';
@@ -19,17 +19,19 @@ import NewButton from '../../components/shared/NewButton';
 import LogoutIcon from '../../assets/icons/logout-icon.svg';
 import { Link, router } from 'expo-router';
 import { signOut } from 'firebase/auth';
-import { firebaseAuth } from '../../config/firebase';
+import { firebaseAuth, firestore } from '../../config/firebase';
 import { useAuth } from '../../hooks/useAuth';
 import { useTheme } from '../../hooks/useTheme';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { StatusBar, setStatusBarStyle } from 'expo-status-bar';
 import { useWindowDimensions } from 'react-native';
+import { useReservationsStore } from '../../zustand/store';
+import { collection, getDocs } from 'firebase/firestore';
 
 const Admin = () => {
     const [loading, setLoading] = useState(false);
-    const [refreshing, setRefreshing] = useState(false);
+    const { setIsLoading, isRefreshing, setIsRefreshing, setReservations } = useReservationsStore();
     const [user, setUser] = useAuth();
     const { theme, palette } = useTheme();
     const styles = styling(palette);
@@ -56,8 +58,22 @@ const Admin = () => {
         setUser(null);
     };
 
-    const onRefresh = useCallback(() => {
-        setRefreshing(true);
+    const onRefresh = useCallback(async () => {
+        setIsRefreshing(true);
+        setIsLoading(true);
+
+        const newReservations: Reservation[] = [];
+        const reservationsCollection = collection(firestore, 'reservations');
+        const reservationsSnapshot = await getDocs(reservationsCollection);
+
+        reservationsSnapshot.forEach(doc => {
+            const reservation = doc.data() as Reservation;
+            newReservations.push(reservation);
+        });
+
+        setReservations(newReservations);
+        setIsRefreshing(false);
+        setIsLoading(false);
     }, []);
 
     useEffect(() => {
@@ -85,8 +101,8 @@ const Admin = () => {
                 refreshControl={
                     <RefreshControl
                         colors={[palette.primaryAccent]}
-                        refreshing={refreshing}
-                        onRefresh={onRefresh}
+                        refreshing={isRefreshing}
+                        onRefresh={() => setIsRefreshing(true)}
                     />
                 }
                 onScroll={Animated.event(
@@ -225,7 +241,7 @@ const Admin = () => {
                         },
                     ]}
                 >
-                    <ReservationsSection refreshing={refreshing} setRefreshing={setRefreshing} />
+                    <ReservationsSection />
                 </View>
             </Animated.ScrollView>
             <NewButton />

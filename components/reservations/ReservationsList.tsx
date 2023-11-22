@@ -5,42 +5,16 @@ import SectionHeader from './SectionHeader';
 import ScreenLoader from '../shared/ScreenLoader';
 import ListHeader from '../shared/ListHeader';
 import TextInput from '../shared/TextInput';
-import { useEffect, useMemo, useState } from 'react';
-import { fetchReservations, groupByPayment } from '../../utils/reservations';
+import { useMemo } from 'react';
+import { groupByPayment } from '../../utils/reservations';
+import { useReservationsStore } from '../../zustand/store';
 
 const ReservationsList = () => {
     const styles = styling();
-    const [isLoading, setIsLoading] = useState(true);
-    const [refreshing, setRefreshing] = useState(false);
-    const [reservations, setReservations] = useState<Reservation[]>([]);
+    const { reservations, isLoading, isRefreshing, setIsRefreshing } = useReservationsStore();
     const groupedReservations: (string | Reservation)[] = useMemo(() => {
         return groupByPayment(reservations);
     }, [reservations]);
-
-    const getReservations = async () => {
-        setIsLoading(true);
-
-        await fetchReservations(setReservations);
-
-        setTimeout(() => {
-            setIsLoading(false);
-            setRefreshing(false);
-        }, 500);
-    };
-
-    const onRefresh = () => {
-        setRefreshing(true);
-    };
-
-    useEffect(() => {
-        getReservations();
-    }, []);
-
-    useEffect(() => {
-        if (refreshing) {
-            getReservations();
-        }
-    }, [refreshing]);
 
     return (
         <View style={styles.container}>
@@ -48,7 +22,10 @@ const ReservationsList = () => {
             <View style={styles.listContainer}>
                 <FlatList
                     refreshControl={
-                        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+                        <RefreshControl
+                            refreshing={isRefreshing}
+                            onRefresh={() => setIsRefreshing(true)}
+                        />
                     }
                     data={groupedReservations}
                     renderItem={({ item }) => {

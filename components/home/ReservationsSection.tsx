@@ -4,52 +4,21 @@ import { Colors } from '../../types';
 import ReservationItem from './ReservationItem';
 import { ActivityIndicator } from 'react-native';
 import { Link } from 'expo-router';
-import { Reservation } from '../../types';
 import Button from '../shared/Button';
 import Reanimated, { FadeIn, FadeOut } from 'react-native-reanimated';
 import ListEmpty from '../shared/ListEmpty';
 import { useTheme } from '../../hooks/useTheme';
-import { Dispatch, SetStateAction, useEffect, useState } from 'react';
-import { fetchReservations } from '../../utils/reservations';
+import { useReservationsStore } from '../../zustand/store';
 
-interface ReservationsSectionProps {
-    refreshing: boolean;
-    setRefreshing: Dispatch<SetStateAction<boolean>>;
-}
-
-const ReservationsSection = ({ refreshing, setRefreshing }: ReservationsSectionProps) => {
+const ReservationsSection = () => {
     const { palette } = useTheme();
     const styles = styling(palette);
-    const [isLoading, setIsLoading] = useState(false);
-    const [reservations, setReservations] = useState<Reservation[]>([]);
-    const [noData, setNoData] = useState(false);
-
-    const fetchData = async () => {
-        setIsLoading(true);
-
-        const noData = await fetchReservations(setReservations);
-
-        setTimeout(() => {
-            setIsLoading(false);
-            setRefreshing(false);
-            setNoData(noData);
-        }, 1250);
-    };
-
-    useEffect(() => {
-        fetchData();
-    }, []);
-
-    useEffect(() => {
-        if (refreshing) {
-            fetchData();
-        }
-    }, [refreshing]);
+    const { reservations, isRefreshing, isLoading } = useReservationsStore();
 
     return (
         <View>
             <Text fontWeight="medium">Reservations</Text>
-            {isLoading ? (
+            {isLoading || isRefreshing ? (
                 <Reanimated.View
                     key="loader"
                     entering={FadeIn}
@@ -75,7 +44,7 @@ const ReservationsSection = ({ refreshing, setRefreshing }: ReservationsSectionP
                     </View>
                 </Reanimated.View>
             ) : (
-                noData && <ListEmpty />
+                <ListEmpty />
             )}
         </View>
     );
