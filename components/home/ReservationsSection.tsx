@@ -9,11 +9,17 @@ import Reanimated, { FadeIn, FadeOut } from 'react-native-reanimated';
 import ListEmpty from '../shared/ListEmpty';
 import { useTheme } from '../../hooks/useTheme';
 import { useReservationsStore } from '../../zustand/store';
+import { useMemo } from 'react';
 
 const ReservationsSection = () => {
     const { palette } = useTheme();
     const styles = styling(palette);
     const { reservations, isRefreshing, isLoading } = useReservationsStore();
+    const cutReservations = useMemo(() => {
+        if (reservations.length) {
+            return [...reservations].splice(0, 3);
+        }
+    }, [reservations]);
 
     return (
         <View>
@@ -27,14 +33,14 @@ const ReservationsSection = () => {
                 >
                     <ActivityIndicator color={palette.primaryAccent} />
                 </Reanimated.View>
-            ) : reservations.length ? (
+            ) : cutReservations ? (
                 <Reanimated.View
                     key="reservations"
                     entering={FadeIn}
                     exiting={FadeOut}
                     style={styles.reservationsContainer}
                 >
-                    {reservations.map(reservation => (
+                    {cutReservations.map(reservation => (
                         <ReservationItem key={reservation.id} {...reservation} />
                     ))}
                     <View style={styles.viewAllBtnContainer}>
