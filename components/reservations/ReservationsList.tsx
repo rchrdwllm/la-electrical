@@ -2,10 +2,11 @@ import { FlatList, RefreshControl, StyleSheet, View } from 'react-native';
 import { Reservation } from '../../types';
 import ReservationRenderItem from './ReservationRenderItem';
 import SectionHeader from './SectionHeader';
-import ScreenLoader from '../shared/ScreenLoader';
 import ListHeader from '../shared/ListHeader';
 import TextInput from '../shared/TextInput';
-import { useMemo } from 'react';
+import ScreenLoader from '../shared/ScreenLoader';
+import NewButton from '../shared/NewButton';
+import { useEffect, useMemo, useState } from 'react';
 import { groupByPayment } from '../../utils/reservations';
 import { useReservationsStore } from '../../zustand/store';
 import { useTheme } from '../../hooks/useTheme';
@@ -13,14 +14,23 @@ import { useTheme } from '../../hooks/useTheme';
 const ReservationsList = () => {
     const { palette } = useTheme();
     const styles = styling();
+    const [initialLoading, setInitialLoading] = useState(true);
     const { reservations, isLoading, isRefreshing, setIsRefreshing } = useReservationsStore();
     const groupedReservations: (string | Reservation)[] = useMemo(() => {
         return groupByPayment(reservations);
     }, [reservations]);
 
+    useEffect(() => {
+        if (initialLoading && groupedReservations.length) {
+            setTimeout(() => {
+                setInitialLoading(false);
+            }, 500);
+        }
+    }, [groupedReservations]);
+
     return (
         <View style={styles.container}>
-            {isLoading && <ScreenLoader />}
+            {(isLoading || initialLoading) && <ScreenLoader />}
             <View style={styles.listContainer}>
                 <FlatList
                     refreshControl={
@@ -56,6 +66,7 @@ const ReservationsList = () => {
                     )}
                 />
             </View>
+            <NewButton />
         </View>
     );
 };
