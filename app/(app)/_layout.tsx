@@ -1,23 +1,69 @@
 import { Redirect, Stack } from 'expo-router';
 import Reanimated, { FadeIn, FadeOut } from 'react-native-reanimated';
-import { Colors } from '../../types';
+import { Colors, Reservation } from '../../types';
 import { StyleSheet } from 'react-native';
 import { useAuth } from '../../hooks/useAuth';
 import { useEffect } from 'react';
 import { onAuthStateChanged } from 'firebase/auth';
-import { firebaseAuth } from '../../config/firebase';
+import { firebaseAuth, firestore } from '../../config/firebase';
 import { useTheme } from '../../hooks/useTheme';
+import { useReservationsStore } from '../../zustand/store';
+import { collection, getDocs, onSnapshot, query } from 'firebase/firestore';
 
 const Layout = () => {
     const [user, setUser] = useAuth();
+    const { setReservations, setIsLoading, isRefreshing, setIsRefreshing } = useReservationsStore();
     const { palette } = useTheme();
     const styles = styling(palette);
+
+    useEffect(() => {
+        setIsLoading(true);
+
+        const reservationsCollection = collection(firestore, 'reservations');
+        const reservationsQuery = query(reservationsCollection);
+
+        onSnapshot(reservationsQuery, snapshot => {
+            const reservationsData: Reservation[] = [];
+
+            snapshot.forEach(doc => {
+                const reservation = doc.data() as Reservation;
+                reservationsData.push(reservation);
+            });
+
+            setReservations(reservationsData);
+            setIsLoading(false);
+            setIsRefreshing(false);
+        });
+    }, []);
 
     useEffect(() => {
         onAuthStateChanged(firebaseAuth, user => {
             setUser(user);
         });
     }, []);
+
+    const onRefresh = async () => {
+        setIsLoading(true);
+
+        const newReservations: Reservation[] = [];
+        const reservationsCollection = collection(firestore, 'reservations');
+        const reservationsSnapshot = await getDocs(reservationsCollection);
+
+        reservationsSnapshot.forEach(doc => {
+            const reservation = doc.data() as Reservation;
+            newReservations.push(reservation);
+        });
+
+        setReservations(newReservations);
+        setIsRefreshing(false);
+        setIsLoading(false);
+    };
+
+    useEffect(() => {
+        if (isRefreshing) {
+            onRefresh();
+        }
+    }, [isRefreshing]);
 
     if (!user) return <Redirect href="/sign-in" />;
 
