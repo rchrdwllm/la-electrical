@@ -20,6 +20,7 @@ export const fetchReservations = async (
 ) => {
     const reservationsCollection = collection(firestore, 'reservations');
     const reservationsQuery = query(reservationsCollection);
+    let noData = true;
 
     onSnapshot(reservationsQuery, snapshot => {
         const reservationsData: Reservation[] = [];
@@ -29,8 +30,16 @@ export const fetchReservations = async (
             reservationsData.push(reservation);
         });
 
+        if (!reservationsData.length) {
+            noData = true;
+        } else {
+            noData = false;
+        }
+
         setReservations(reservationsData);
     });
+
+    return noData;
 };
 
 export const addReservation = async (data: {
