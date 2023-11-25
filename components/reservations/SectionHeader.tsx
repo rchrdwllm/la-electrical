@@ -1,13 +1,19 @@
-import { View, StyleSheet } from 'react-native';
+import { StyleSheet } from 'react-native';
+import Reanimated, { FadeIn, FadeOut, Layout } from 'react-native-reanimated';
 import Text from '../shared/Text';
 
 const SectionHeader = ({ title }: { title: string }) => {
     const styles = styling();
 
     return (
-        <View style={styles.container}>
+        <Reanimated.View
+            entering={FadeIn}
+            exiting={FadeOut}
+            layout={Layout}
+            style={styles.container}
+        >
             <Text fontWeight="medium">{title}</Text>
-        </View>
+        </Reanimated.View>
     );
 };
 
