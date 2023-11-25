@@ -1,4 +1,4 @@
-import { RefreshControl, StyleSheet, View } from 'react-native';
+import { RefreshControl, ScrollView, StyleSheet, View } from 'react-native';
 import { Reservation } from '../../types';
 import ReservationRenderItem from './ReservationRenderItem';
 import SectionHeader from './SectionHeader';
