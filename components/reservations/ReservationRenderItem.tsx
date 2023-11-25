@@ -3,6 +3,9 @@ import { Colors } from '../../types';
 import Reanimated, {
     Easing,
     Extrapolate,
+    FadeIn,
+    FadeOut,
+    Layout,
     interpolate,
     interpolateColor,
     measure,
@@ -20,8 +23,10 @@ import Button from '../shared/Button';
 import { Reservation } from '../../types';
 import { useTheme } from '../../hooks/useTheme';
 import { useSharedValue } from 'react-native-reanimated';
-import { useState } from 'react';
+import { memo, useState } from 'react';
 import { deleteReservation } from '../../utils/reservations';
+
+const AnimatedPressable = Reanimated.createAnimatedComponent(Pressable);
 
 const ReservationRenderItem = ({
     reservationDate,
@@ -157,12 +162,23 @@ const ReservationRenderItem = ({
     };
 
     return (
-        <Pressable onPress={handleAnimate} onPressIn={onPressIn} onPressOut={onPressOut}>
+        <AnimatedPressable
+            entering={FadeIn}
+            exiting={FadeOut}
+            layout={Layout.delay(500)}
+            onPress={handleAnimate}
+            onPressIn={onPressIn}
+            onPressOut={onPressOut}
+        >
             <Reanimated.View style={[styles.container, animatedScale]}>
                 <View style={styles.main}>
                     <View style={styles.flexContainer_1}>
                         <View style={styles.reservationDetails}>
-                            <Text style={styles.typeOfService} fontWeight="medium">
+                            <Text
+                                numberOfLines={1}
+                                style={styles.typeOfService}
+                                fontWeight="medium"
+                            >
                                 {typeOfService}
                             </Text>
                         </View>
@@ -204,6 +220,8 @@ const ReservationRenderItem = ({
                                 style={styles.dropdownBtn}
                                 onPress={handleDelete}
                                 text="Delete"
+                                loading={deleteLoading}
+                                showText={!deleteLoading}
                             />
                             <Button
                                 onPress={() => setPaid(!paid)}
@@ -216,7 +234,7 @@ const ReservationRenderItem = ({
                     </Reanimated.View>
                 </Reanimated.View>
             </Reanimated.View>
-        </Pressable>
+        </AnimatedPressable>
     );
 };
 
@@ -253,6 +271,7 @@ const styling = (palette: Colors) =>
         },
         reservationDetails: {
             gap: 4,
+            width: '65%',
         },
         typeOfService: {
             fontSize: 20,
@@ -296,4 +315,4 @@ const styling = (palette: Colors) =>
         },
     });
 
-export default ReservationRenderItem;
+export default memo(ReservationRenderItem);
