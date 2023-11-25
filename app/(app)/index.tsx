@@ -22,16 +22,15 @@ import { signOut } from 'firebase/auth';
 import { firebaseAuth, firestore } from '../../config/firebase';
 import { useAuth } from '../../hooks/useAuth';
 import { useTheme } from '../../hooks/useTheme';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { StatusBar, setStatusBarStyle } from 'expo-status-bar';
 import { useWindowDimensions } from 'react-native';
 import { useReservationsStore } from '../../zustand/store';
-import { collection, getDocs } from 'firebase/firestore';
 
 const Admin = () => {
     const [loading, setLoading] = useState(false);
-    const { setIsLoading, isRefreshing, setIsRefreshing, setReservations } = useReservationsStore();
+    const { isRefreshing, setIsRefreshing, setReservations } = useReservationsStore();
     const [user, setUser] = useAuth();
     const { theme, palette } = useTheme();
     const styles = styling(palette);
@@ -57,24 +56,6 @@ const Admin = () => {
         setLoading(false);
         setUser(null);
     };
-
-    const onRefresh = useCallback(async () => {
-        setIsRefreshing(true);
-        setIsLoading(true);
-
-        const newReservations: Reservation[] = [];
-        const reservationsCollection = collection(firestore, 'reservations');
-        const reservationsSnapshot = await getDocs(reservationsCollection);
-
-        reservationsSnapshot.forEach(doc => {
-            const reservation = doc.data() as Reservation;
-            newReservations.push(reservation);
-        });
-
-        setReservations(newReservations);
-        setIsRefreshing(false);
-        setIsLoading(false);
-    }, []);
 
     useEffect(() => {
         if (theme === 'dark') {
