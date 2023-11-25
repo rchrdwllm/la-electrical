@@ -5,7 +5,6 @@ import Reanimated, {
     Extrapolate,
     FadeIn,
     FadeOut,
-    Layout,
     interpolate,
     interpolateColor,
     measure,
@@ -23,8 +22,8 @@ import Button from '../shared/Button';
 import { Reservation } from '../../types';
 import { useTheme } from '../../hooks/useTheme';
 import { useSharedValue } from 'react-native-reanimated';
-import { memo, useState } from 'react';
-import { deleteReservation } from '../../utils/reservations';
+import { memo, useEffect, useState } from 'react';
+import { deleteReservation, payReservation, unpayReservation } from '../../utils/reservations';
 
 const AnimatedPressable = Reanimated.createAnimatedComponent(Pressable);
 
@@ -38,8 +37,8 @@ const ReservationRenderItem = ({
 }: Reservation) => {
     const { theme, palette } = useTheme();
     const styles = styling(palette);
-    const [paid, setPaid] = useState(isPaid);
     const [deleteLoading, setDeleteLoading] = useState(false);
+    const [payLoading, setPayLoading] = useState(false);
 
     const dropdownRef = useAnimatedRef<Reanimated.View>();
     const heightValue = useSharedValue(0);
@@ -68,7 +67,7 @@ const ReservationRenderItem = ({
     );
     const colorProgress = useDerivedValue(
         () =>
-            paid
+            isPaid
                 ? withTiming(1, {
                       duration: 250,
                       easing: Easing.out(Easing.exp),
@@ -77,7 +76,7 @@ const ReservationRenderItem = ({
                       duration: 250,
                       easing: Easing.in(Easing.exp),
                   }),
-        [paid]
+        [isPaid]
     );
 
     const animatedRotate = useAnimatedStyle(() => ({
@@ -161,11 +160,22 @@ const ReservationRenderItem = ({
         ]);
     };
 
+    const handlePay = async () => {
+        setPayLoading(true);
+
+        if (isPaid) {
+            await unpayReservation(id);
+        } else {
+            await payReservation(id);
+        }
+
+        setPayLoading(false);
+    };
+
     return (
         <AnimatedPressable
             entering={FadeIn}
             exiting={FadeOut}
-            layout={Layout.delay(500)}
             onPress={handleAnimate}
             onPressIn={onPressIn}
             onPressOut={onPressOut}
@@ -188,7 +198,7 @@ const ReservationRenderItem = ({
                                 [
                                     styles.price,
                                     {
-                                        color: paid ? palette.success : palette.warning,
+                                        color: isPaid ? palette.success : palette.warning,
                                     },
                                 ] as any
                             }
@@ -224,11 +234,14 @@ const ReservationRenderItem = ({
                                 showText={!deleteLoading}
                             />
                             <Button
-                                onPress={() => setPaid(!paid)}
+                                onPress={handlePay}
                                 style={[styles.dropdownBtn, animatedColors]}
                                 Icon={CheckIcon}
                                 iconSize={19}
-                                iconColor={paid ? palette.primaryAccent : palette.invertedText}
+                                iconColor={isPaid ? palette.primaryAccent : palette.invertedText}
+                                loading={payLoading}
+                                showIcon={!payLoading}
+                                loadingColor={isPaid ? palette.primaryAccent : palette.invertedText}
                             />
                         </View>
                     </Reanimated.View>

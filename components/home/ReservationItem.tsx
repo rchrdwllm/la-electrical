@@ -21,7 +21,7 @@ import { Reservation } from '../../types';
 import { useTheme } from '../../hooks/useTheme';
 import { useSharedValue } from 'react-native-reanimated';
 import { useState } from 'react';
-import { deleteReservation } from '../../utils/reservations';
+import { deleteReservation, payReservation, unpayReservation } from '../../utils/reservations';
 
 const ReservationItem = ({
     reservationDate,
@@ -33,8 +33,8 @@ const ReservationItem = ({
 }: Reservation) => {
     const { theme, palette } = useTheme();
     const styles = styling(palette);
-    const [paid, setPaid] = useState(isPaid);
     const [deleteLoading, setDeleteLoading] = useState(false);
+    const [payLoading, setPayLoading] = useState(false);
 
     const dropdownRef = useAnimatedRef<Reanimated.View>();
     const heightValue = useSharedValue(0);
@@ -63,7 +63,7 @@ const ReservationItem = ({
     );
     const colorProgress = useDerivedValue(
         () =>
-            paid
+            isPaid
                 ? withTiming(1, {
                       duration: 250,
                       easing: Easing.out(Easing.exp),
@@ -72,7 +72,7 @@ const ReservationItem = ({
                       duration: 250,
                       easing: Easing.in(Easing.exp),
                   }),
-        [paid]
+        [isPaid]
     );
 
     const animatedRotate = useAnimatedStyle(() => ({
@@ -156,6 +156,18 @@ const ReservationItem = ({
         ]);
     };
 
+    const handlePay = async () => {
+        setPayLoading(true);
+
+        if (isPaid) {
+            await unpayReservation(id);
+        } else {
+            await payReservation(id);
+        }
+
+        setPayLoading(false);
+    };
+
     return (
         <Pressable onPress={handleAnimate} onPressIn={onPressIn} onPressOut={onPressOut}>
             <Reanimated.View style={[styles.container, animatedScale]}>
@@ -185,7 +197,7 @@ const ReservationItem = ({
                             <Text
                                 fontWeight="medium"
                                 style={{
-                                    color: paid ? palette.success : palette.warning,
+                                    color: isPaid ? palette.success : palette.warning,
                                 }}
                             >
                                 PHP {price}
@@ -201,11 +213,14 @@ const ReservationItem = ({
                                 showText={!deleteLoading}
                             />
                             <Button
-                                onPress={() => setPaid(!paid)}
+                                onPress={handlePay}
                                 style={[styles.dropdownBtn, animatedColors]}
                                 Icon={CheckIcon}
                                 iconSize={19}
-                                iconColor={paid ? palette.primaryAccent : palette.invertedText}
+                                iconColor={isPaid ? palette.primaryAccent : palette.invertedText}
+                                loadingColor={isPaid ? palette.primaryAccent : palette.invertedText}
+                                loading={payLoading}
+                                showIcon={!payLoading}
                             />
                         </View>
                     </Reanimated.View>
