@@ -30,6 +30,7 @@ interface ButtonProps extends AnimateProps<PressableProps> {
     Icon?: any;
     iconSize?: number;
     iconColor?: string;
+    showIcon?: boolean;
 }
 
 const AnimatedPressable = Reanimated.createAnimatedComponent(Pressable);
@@ -44,6 +45,7 @@ const Button = forwardRef(
             textStyle,
             text,
             showText = true,
+            showIcon = true,
             loading,
             loadingColor,
             disabled,
@@ -122,7 +124,7 @@ const Button = forwardRef(
                 entering={entering}
                 exiting={exiting}
             >
-                {Icon ? (
+                {Icon && showIcon ? (
                     <Icon
                         height={iconSize}
                         width={iconSize}
