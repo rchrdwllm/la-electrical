@@ -8,7 +8,7 @@ import { onAuthStateChanged } from 'firebase/auth';
 import { firebaseAuth, firestore } from '../../config/firebase';
 import { useTheme } from '../../hooks/useTheme';
 import { useReservationsStore } from '../../zustand/store';
-import { collection, getDocs, onSnapshot, query } from 'firebase/firestore';
+import { collection, getDocs, onSnapshot, orderBy, query } from 'firebase/firestore';
 
 const Layout = () => {
     const [user, setUser] = useAuth();
@@ -20,7 +20,7 @@ const Layout = () => {
         setIsLoading(true);
 
         const reservationsCollection = collection(firestore, 'reservations');
-        const reservationsQuery = query(reservationsCollection);
+        const reservationsQuery = query(reservationsCollection, orderBy('reservationDate', 'asc'));
 
         onSnapshot(reservationsQuery, snapshot => {
             const reservationsData: Reservation[] = [];
@@ -47,7 +47,8 @@ const Layout = () => {
 
         const newReservations: Reservation[] = [];
         const reservationsCollection = collection(firestore, 'reservations');
-        const reservationsSnapshot = await getDocs(reservationsCollection);
+        const reservationsQuery = query(reservationsCollection, orderBy('reservationDate', 'asc'));
+        const reservationsSnapshot = await getDocs(reservationsQuery);
 
         reservationsSnapshot.forEach(doc => {
             const reservation = doc.data() as Reservation;
