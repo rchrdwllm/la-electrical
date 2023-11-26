@@ -45,6 +45,21 @@ const EditReservation = ({ setReservationToEdit, reservationToEdit }: EditReserv
     );
     const [typeOfService, setTypeOfService] = useState(reservation.typeOfService);
     const [modeOfPayment, setModeOfPayment] = useState(reservation.modeOfPayment);
+    const [shouldNotPan, setShouldNotPan] = useState(false);
+    const [noChanges, setNoChanges] = useState(true);
+
+    useEffect(() => {
+        if (
+            name !== reservation.name ||
+            reservationDate?.getTime() !== reservation.reservationDate.toDate().getTime() ||
+            typeOfService !== reservation.typeOfService ||
+            modeOfPayment !== reservation.modeOfPayment
+        ) {
+            setNoChanges(false);
+        } else {
+            setNoChanges(true);
+        }
+    }, [name, reservationDate, typeOfService, modeOfPayment]);
 
     const toggleModal = () => {
         setReservationToEdit(null);
@@ -147,7 +162,13 @@ const EditReservation = ({ setReservationToEdit, reservationToEdit }: EditReserv
                         .restSpeedThreshold(2)
                         .overshootClamping(0)}
                     exiting={SlideOutDown}
-                    style={[styles.modal, animatedY]}
+                    style={[
+                        styles.modal,
+                        animatedY,
+                        {
+                            pointerEvents: shouldNotPan ? 'box-none' : 'auto',
+                        },
+                    ]}
                 >
                     <View style={styles.pill} />
                     <Text fontWeight="bold" style={styles.heading}>
@@ -190,6 +211,9 @@ const EditReservation = ({ setReservationToEdit, reservationToEdit }: EditReserv
                             onChange={setTypeOfService}
                             placeholder="Select a service"
                             iconColor={palette.primaryText}
+                            onResponderGrant={() => setShouldNotPan(true)}
+                            onResponderRelease={() => setShouldNotPan(false)}
+                            linesToShow={3}
                         />
                         <Select
                             data={modesOfPayment}
@@ -201,6 +225,8 @@ const EditReservation = ({ setReservationToEdit, reservationToEdit }: EditReserv
                             onChange={setModeOfPayment}
                             placeholder="Select mode of payment"
                             iconColor={palette.primaryText}
+                            onResponderGrant={() => setShouldNotPan(true)}
+                            onResponderRelease={() => setShouldNotPan(false)}
                         />
                         <View style={styles.btns}>
                             <Button
@@ -213,7 +239,7 @@ const EditReservation = ({ setReservationToEdit, reservationToEdit }: EditReserv
                                 text="Save"
                                 onPress={handleSave}
                                 textStyle={styles.saveBtnText as any}
-                                disabled={isLoading}
+                                disabled={isLoading || noChanges}
                                 loading={isLoading}
                                 showText={!isLoading}
                             />

@@ -36,6 +36,9 @@ interface SelectProps {
     onChange: (item: string) => void;
     placeholder?: string;
     iconColor?: string;
+    onResponderGrant?: () => void;
+    onResponderRelease?: () => void;
+    linesToShow?: number;
 }
 
 const Select = ({
@@ -46,6 +49,9 @@ const Select = ({
     iconColor,
     placeholder = 'Select',
     textStyle,
+    onResponderGrant,
+    onResponderRelease,
+    linesToShow,
 }: SelectProps) => {
     const { theme, palette } = useTheme();
     const styles = styling(palette);
@@ -168,8 +174,12 @@ const Select = ({
                 <Reanimated.View style={[styles.dropdownContainer, animatedHeight]}>
                     <Reanimated.View ref={dropdownRef} style={[styles.dropdown, animatedOpacity]}>
                         <FlatList
-                            style={styles.dropdownList}
+                            style={{
+                                maxHeight: linesToShow ? linesToShow * 44 : 200,
+                            }}
                             data={data}
+                            onResponderGrant={onResponderGrant}
+                            onResponderRelease={onResponderRelease}
                             renderItem={({ item }) => (
                                 <Button
                                     text={item}
@@ -228,9 +238,6 @@ const styling = (palette: Colors) =>
             zIndex: 1,
             flex: 1,
             width: '100%',
-        },
-        dropdownList: {
-            maxHeight: 200,
         },
     });
 
