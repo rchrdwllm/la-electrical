@@ -16,6 +16,8 @@ export interface Colors {
     accentShadow: string;
     success: string;
     warning: string;
+    black: string;
+    modalBackground: string;
 }
 
 export interface Reservation {
@@ -25,4 +27,5 @@ export interface Reservation {
     id: string;
     isPaid: boolean;
     price: number;
+    modeOfPayment: string;
 }

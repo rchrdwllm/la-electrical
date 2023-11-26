@@ -16,6 +16,8 @@ export const light: Colors = {
     accentShadow: '#FFD9B4',
     success: '#69A155',
     warning: '#FFC42E',
+    black: '#000000',
+    modalBackground: '#00000050',
 };
 
 export const dark: Colors = {
@@ -34,6 +36,8 @@ export const dark: Colors = {
     accentShadow: '#593E24',
     success: '#69A155',
     warning: '#FFC42E',
+    black: '#000000',
+    modalBackground: '#00000050',
 };
 
 export default { light, dark };
