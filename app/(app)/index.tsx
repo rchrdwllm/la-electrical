@@ -8,7 +8,8 @@ import {
     RefreshControl,
 } from 'react-native';
 import Text from '../../components/shared/Text';
-import { Colors, Reservation } from '../../types';
+import { Colors } from '../../types';
+import Reanimated, { useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 import TransparentButton from '../../components/shared/TransparentButton';
 import ArchiveIcon from '../../assets/icons/archive-icon.svg';
 import CardStackIcon from '../../assets/icons/card-stack-icon.svg';
@@ -17,9 +18,10 @@ import ReservationsSection from '../../components/home/ReservationsSection';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import NewButton from '../../components/shared/NewButton';
 import LogoutIcon from '../../assets/icons/logout-icon.svg';
+import EditReservation from '../../components/shared/EditReservation';
 import { Link, router } from 'expo-router';
 import { signOut } from 'firebase/auth';
-import { firebaseAuth, firestore } from '../../config/firebase';
+import { firebaseAuth } from '../../config/firebase';
 import { useAuth } from '../../hooks/useAuth';
 import { useTheme } from '../../hooks/useTheme';
 import { useEffect, useRef, useState } from 'react';
@@ -27,17 +29,21 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { StatusBar, setStatusBarStyle } from 'expo-status-bar';
 import { useWindowDimensions } from 'react-native';
 import { useReservationsStore } from '../../zustand/store';
+import { Gesture, GestureDetector, GestureHandlerRootView } from 'react-native-gesture-handler';
 
 const Admin = () => {
     const [loading, setLoading] = useState(false);
-    const { isRefreshing, setIsRefreshing, setReservations } = useReservationsStore();
+    const { isRefreshing, setIsRefreshing } = useReservationsStore();
     const [user, setUser] = useAuth();
     const { theme, palette } = useTheme();
     const styles = styling(palette);
     const { top } = useSafeAreaInsets();
     const scrollY = useRef(new Animated.Value(0)).current;
-    const [headerHeight, setHeaderHeight] = useState(0);
+    const [headerHeight, setHeaderHeight] = useState(332);
     const { height } = useWindowDimensions();
+    const [reservationToEdit, setReservationToEdit] = useState<string | null>(null);
+    const scaleValue = useSharedValue(1);
+    const borderRadiusValue = useSharedValue(0);
 
     if (!user) return null;
 
@@ -57,14 +63,42 @@ const Admin = () => {
         setUser(null);
     };
 
+    const animatedScale = useAnimatedStyle(() => ({
+        transform: [
+            {
+                scale: scaleValue.value,
+            },
+        ],
+        borderRadius: borderRadiusValue.value,
+    }));
+
     useEffect(() => {
         if (theme === 'dark') {
             setStatusBarStyle('light');
         }
     }, [theme]);
 
+    useEffect(() => {
+        if (reservationToEdit) {
+            scaleValue.value = withTiming(0.9);
+            borderRadiusValue.value = withTiming(8);
+        } else {
+            scaleValue.value = withTiming(1);
+            borderRadiusValue.value = withTiming(0);
+        }
+    }, [reservationToEdit]);
+
+    useEffect(() => {
+        console.log(
+            scrollY.interpolate({
+                inputRange: [-headerHeight, 0, headerHeight],
+                outputRange: [2, 1, 0.75],
+            })
+        );
+    }, [headerHeight]);
+
     return (
-        <View style={styles.container}>
+        <GestureHandlerRootView style={styles.parentContainer}>
             <StatusBar animated style="light" />
             <Animated.View
                 style={[
@@ -78,164 +112,194 @@ const Admin = () => {
                     },
                 ]}
             ></Animated.View>
-            <Animated.ScrollView
-                refreshControl={
-                    <RefreshControl
-                        colors={[palette.primaryAccent]}
-                        progressBackgroundColor={palette.primaryBackground}
-                        refreshing={isRefreshing}
-                        onRefresh={() => setIsRefreshing(true)}
-                    />
-                }
-                onScroll={Animated.event(
-                    [
-                        {
-                            nativeEvent: {
-                                contentOffset: {
-                                    y: scrollY,
-                                },
-                            },
-                        },
-                    ],
-                    {
-                        useNativeDriver: true,
-                        listener: (e: any) => {
-                            const { y } = e.nativeEvent.contentOffset;
-
-                            if (theme === 'light') {
-                                setStatusBarStyle(y >= headerHeight - 90 ? 'dark' : 'light');
-                            }
-                        },
-                    }
-                )}
-            >
-                <Animated.View
-                    onLayout={e => setHeaderHeight(e.nativeEvent.layout.height)}
-                    style={[
-                        styles.header,
-                        {
-                            transform: [
+            <Reanimated.View style={[styles.container, animatedScale]}>
+                <View style={{ flex: 1 }}>
+                    <Animated.ScrollView
+                        refreshControl={
+                            <RefreshControl
+                                colors={[palette.primaryAccent]}
+                                progressBackgroundColor={palette.primaryBackground}
+                                refreshing={isRefreshing}
+                                onRefresh={() => setIsRefreshing(true)}
+                            />
+                        }
+                        onScroll={Animated.event(
+                            [
                                 {
-                                    translateY: scrollY.interpolate({
-                                        inputRange: [-headerHeight, 0, headerHeight],
-                                        outputRange: [-headerHeight / 2, 0, headerHeight * 0.75],
-                                    }),
+                                    nativeEvent: {
+                                        contentOffset: {
+                                            y: scrollY,
+                                        },
+                                    },
                                 },
                             ],
-                        },
-                    ]}
-                >
-                    <Animated.Image
-                        style={[
-                            styles.headerBg,
                             {
-                                transform: [
+                                useNativeDriver: true,
+                                listener: (e: any) => {
+                                    const { y } = e.nativeEvent.contentOffset;
+
+                                    if (theme === 'light') {
+                                        setStatusBarStyle(
+                                            y >= headerHeight - 90 ? 'dark' : 'light'
+                                        );
+                                    }
+                                },
+                            }
+                        )}
+                    >
+                        <Animated.View
+                            onLayout={e => setHeaderHeight(e.nativeEvent.layout.height)}
+                            style={[
+                                styles.header,
+                                {
+                                    transform: [
+                                        {
+                                            translateY: scrollY.interpolate({
+                                                inputRange: [-headerHeight, 0, headerHeight],
+                                                outputRange: [
+                                                    -headerHeight / 2,
+                                                    0,
+                                                    headerHeight * 0.75,
+                                                ],
+                                            }),
+                                        },
+                                    ],
+                                },
+                            ]}
+                        >
+                            <Animated.Image
+                                style={[
+                                    styles.headerBg,
                                     {
-                                        scale: scrollY.interpolate({
-                                            inputRange: [-headerHeight, 0, headerHeight],
-                                            outputRange: [2, 1, 0.75],
+                                        transform: [
+                                            {
+                                                scale: scrollY.interpolate({
+                                                    inputRange: [-headerHeight, 0, headerHeight],
+                                                    outputRange: [2, 1, 0.75],
+                                                }),
+                                            },
+                                        ],
+                                    },
+                                ]}
+                                source={require('../../assets/header_bg.png')}
+                            />
+                            <Animated.View
+                                style={[
+                                    styles.headerOverlay,
+                                    {
+                                        height: headerHeight,
+                                        opacity: scrollY.interpolate({
+                                            inputRange: [headerHeight - 200, headerHeight - 90],
+                                            outputRange: [0, 1],
                                         }),
                                     },
-                                ],
-                            },
-                        ]}
-                        source={require('../../assets/header_bg.png')}
-                    />
-                    <Animated.View
-                        style={[
-                            styles.headerOverlay,
-                            {
-                                height: headerHeight,
-                                opacity: scrollY.interpolate({
-                                    inputRange: [headerHeight - 200, headerHeight - 90],
-                                    outputRange: [0, 1],
-                                }),
-                            },
-                        ]}
-                    ></Animated.View>
-                    <View
-                        style={[
-                            styles.headerContent,
-                            {
-                                paddingTop: top / 2,
-                            },
-                        ]}
-                    >
-                        <View style={styles.headerFlexContainer}>
-                            <Image
-                                style={styles.headerLogo}
-                                source={require('../../assets/logo_light.png')}
-                            />
-                            <View>
-                                {loading ? (
-                                    <View style={styles.logoutBtnIndicator}>
-                                        <ActivityIndicator
-                                            size={16}
-                                            color={palette.invertedOnAccent}
+                                ]}
+                            ></Animated.View>
+                            <View
+                                style={[
+                                    styles.headerContent,
+                                    {
+                                        paddingTop: top / 2,
+                                    },
+                                ]}
+                            >
+                                <View style={styles.headerFlexContainer}>
+                                    <Image
+                                        style={styles.headerLogo}
+                                        source={require('../../assets/logo_light.png')}
+                                    />
+                                    <View>
+                                        {loading ? (
+                                            <View style={styles.logoutBtnIndicator}>
+                                                <ActivityIndicator
+                                                    size={16}
+                                                    color={palette.invertedOnAccent}
+                                                />
+                                            </View>
+                                        ) : (
+                                            <TransparentButton
+                                                style={styles.logoutBtn}
+                                                textStyle={
+                                                    {
+                                                        display: 'none',
+                                                    } as any
+                                                }
+                                                Icon={LogoutIcon}
+                                                onPress={handleSignOut}
+                                            />
+                                        )}
+                                    </View>
+                                </View>
+                                <Text fontWeight="bold" style={styles.greeting}>
+                                    Hello, Admin!
+                                </Text>
+                                <Pressable onPress={() => router.push('search')}>
+                                    <View style={styles.searchInputContainer}>
+                                        <TextInput
+                                            placeholder="Search..."
+                                            placeholderTextColor={palette.invertedOnAccent}
+                                            style={styles.searchInput}
                                         />
                                     </View>
-                                ) : (
-                                    <TransparentButton
-                                        style={styles.logoutBtn}
-                                        textStyle={
-                                            {
-                                                display: 'none',
-                                            } as any
-                                        }
-                                        Icon={LogoutIcon}
-                                        onPress={handleSignOut}
-                                    />
-                                )}
+                                </Pressable>
+                                <View style={styles.headerBtns}>
+                                    <Link href="/reservations" asChild>
+                                        <TransparentButton
+                                            style={styles.headerBtn}
+                                            Icon={CardStackIcon}
+                                        >
+                                            Reservations
+                                        </TransparentButton>
+                                    </Link>
+                                    <Link href="/inventory" asChild>
+                                        <TransparentButton
+                                            style={styles.headerBtn}
+                                            Icon={ArchiveIcon}
+                                        >
+                                            Inventory
+                                        </TransparentButton>
+                                    </Link>
+                                </View>
                             </View>
+                        </Animated.View>
+                        <View style={styles.curvedSeparator}></View>
+                        <View
+                            style={[
+                                styles.content,
+                                {
+                                    minHeight: height - top,
+                                },
+                            ]}
+                        >
+                            <ReservationsSection
+                                reservationToEdit={reservationToEdit}
+                                setReservationToEdit={setReservationToEdit}
+                            />
                         </View>
-                        <Text fontWeight="bold" style={styles.greeting}>
-                            Hello, Admin!
-                        </Text>
-                        <Pressable onPress={() => router.push('search')}>
-                            <View style={styles.searchInputContainer}>
-                                <TextInput
-                                    placeholder="Search..."
-                                    placeholderTextColor={palette.invertedOnAccent}
-                                    style={styles.searchInput}
-                                />
-                            </View>
-                        </Pressable>
-                        <View style={styles.headerBtns}>
-                            <Link href="/reservations" asChild>
-                                <TransparentButton style={styles.headerBtn} Icon={CardStackIcon}>
-                                    Reservations
-                                </TransparentButton>
-                            </Link>
-                            <Link href="/inventory" asChild>
-                                <TransparentButton style={styles.headerBtn} Icon={ArchiveIcon}>
-                                    Inventory
-                                </TransparentButton>
-                            </Link>
-                        </View>
-                    </View>
-                </Animated.View>
-                <View style={styles.curvedSeparator}></View>
-                <View
-                    style={[
-                        styles.content,
-                        {
-                            minHeight: height - top,
-                        },
-                    ]}
-                >
-                    <ReservationsSection />
+                    </Animated.ScrollView>
+                    <NewButton />
                 </View>
-            </Animated.ScrollView>
-            <NewButton />
-        </View>
+            </Reanimated.View>
+            {reservationToEdit && (
+                <EditReservation
+                    reservationToEdit={reservationToEdit}
+                    setReservationToEdit={setReservationToEdit}
+                />
+            )}
+        </GestureHandlerRootView>
     );
 };
 
 const styling = (palette: Colors) =>
     StyleSheet.create({
+        parentContainer: {
+            flex: 1,
+            backgroundColor: palette.black,
+        },
         container: {
             flex: 1,
             backgroundColor: palette.primaryBackground,
+            overflow: 'hidden',
         },
         safeAreaView: {
             position: 'absolute',
@@ -244,6 +308,7 @@ const styling = (palette: Colors) =>
             width: '100%',
             backgroundColor: palette.primaryBackground,
             zIndex: 2,
+            opacity: 0,
         },
         header: {
             position: 'relative',
