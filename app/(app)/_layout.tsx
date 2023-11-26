@@ -22,15 +22,18 @@ const Layout = () => {
         const reservationsCollection = collection(firestore, 'reservations');
         const reservationsQuery = query(reservationsCollection, orderBy('reservationDate', 'asc'));
 
-        onSnapshot(reservationsQuery, snapshot => {
-            const reservationsData: Reservation[] = [];
+        const reservationsData: { [id: string]: Reservation } = {};
 
-            snapshot.forEach(doc => {
-                const reservation = doc.data() as Reservation;
-                reservationsData.push(reservation);
+        onSnapshot(reservationsQuery, snapshot => {
+            snapshot.docChanges().forEach(change => {
+                if (change.type === 'added' || change.type === 'modified') {
+                    reservationsData[change.doc.id] = change.doc.data() as Reservation;
+                } else if (change.type === 'removed') {
+                    delete reservationsData[change.doc.id];
+                }
             });
 
-            setReservations(reservationsData);
+            setReservations(Object.values(reservationsData));
             setIsLoading(false);
             setIsRefreshing(false);
         });
