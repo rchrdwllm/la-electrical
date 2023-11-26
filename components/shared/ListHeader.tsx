@@ -29,7 +29,7 @@ const ListHeader = forwardRef(() => {
             style={[
                 styles.container,
                 {
-                    paddingTop: top + 32,
+                    paddingTop: top,
                 },
             ]}
         >

@@ -82,7 +82,6 @@ const styling = (palette: Colors) =>
         },
         searchHeader: {
             paddingHorizontal: 16,
-            paddingTop: 32,
         },
         searchContainer: {
             flexDirection: 'row',

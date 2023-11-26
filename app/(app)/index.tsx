@@ -157,7 +157,7 @@ const Admin = () => {
                         style={[
                             styles.headerContent,
                             {
-                                paddingTop: top,
+                                paddingTop: top / 2,
                             },
                         ]}
                     >
@@ -270,7 +270,7 @@ const styling = (palette: Colors) =>
         },
         headerBg: {
             width: '150%',
-            height: 360,
+            height: 332,
             objectFit: 'cover',
         },
         headerOverlay: {
