@@ -8,9 +8,10 @@ interface Store {
     setIsLoading: (isLoading: boolean) => void;
     isRefreshing: boolean;
     setIsRefreshing: (isRefreshing: boolean) => void;
+    reservationById: (id: string) => Reservation;
 }
 
-export const useReservationsStore = create<Store>(set => ({
+export const useReservationsStore = create<Store>((set, get) => ({
     reservations: [],
     setReservations: reservations =>
         set(() => ({
@@ -26,4 +27,7 @@ export const useReservationsStore = create<Store>(set => ({
         set(() => ({
             isRefreshing,
         })),
+    reservationById: (id: string) => {
+        return get().reservations.find(reservation => reservation.id === id)!;
+    },
 }));
