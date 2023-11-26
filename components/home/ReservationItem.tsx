@@ -20,8 +20,13 @@ import Button from '../shared/Button';
 import { Reservation } from '../../types';
 import { useTheme } from '../../hooks/useTheme';
 import { useSharedValue } from 'react-native-reanimated';
-import { useState } from 'react';
+import { Dispatch, SetStateAction, useState } from 'react';
 import { deleteReservation, payReservation, unpayReservation } from '../../utils/reservations';
+
+interface ReservationItemProps extends Reservation {
+    reservationToEdit: string | null;
+    setReservationToEdit: Dispatch<SetStateAction<string | null>>;
+}
 
 const ReservationItem = ({
     reservationDate,
@@ -30,7 +35,9 @@ const ReservationItem = ({
     isPaid,
     price,
     id,
-}: Reservation) => {
+    reservationToEdit,
+    setReservationToEdit,
+}: ReservationItemProps) => {
     const { theme, palette } = useTheme();
     const styles = styling(palette);
     const [deleteLoading, setDeleteLoading] = useState(false);
@@ -156,6 +163,10 @@ const ReservationItem = ({
         ]);
     };
 
+    const handleEdit = () => {
+        setReservationToEdit(id);
+    };
+
     const handlePay = async () => {
         setPayLoading(true);
 
@@ -204,7 +215,7 @@ const ReservationItem = ({
                             </Text>
                         </View>
                         <View style={styles.dropdownBtns}>
-                            <Button style={styles.dropdownBtn} text="Edit" />
+                            <Button style={styles.dropdownBtn} onPress={handleEdit} text="Edit" />
                             <Button
                                 style={styles.dropdownBtn}
                                 onPress={handleDelete}

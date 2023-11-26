@@ -4,14 +4,22 @@ import { Colors } from '../../types';
 import ReservationItem from './ReservationItem';
 import { ActivityIndicator } from 'react-native';
 import { Link } from 'expo-router';
+import { Dispatch, SetStateAction, useMemo } from 'react';
 import Button from '../shared/Button';
 import Reanimated, { FadeIn, FadeOut } from 'react-native-reanimated';
 import ListEmpty from '../shared/ListEmpty';
 import { useTheme } from '../../hooks/useTheme';
 import { useReservationsStore } from '../../zustand/store';
-import { useMemo } from 'react';
 
-const ReservationsSection = () => {
+interface ReservationsSectionProps {
+    reservationToEdit: string | null;
+    setReservationToEdit: Dispatch<SetStateAction<string | null>>;
+}
+
+const ReservationsSection = ({
+    reservationToEdit,
+    setReservationToEdit,
+}: ReservationsSectionProps) => {
     const { palette } = useTheme();
     const styles = styling(palette);
     const { reservations, isRefreshing, isLoading } = useReservationsStore();
@@ -41,7 +49,12 @@ const ReservationsSection = () => {
                     style={styles.reservationsContainer}
                 >
                     {cutReservations.map(reservation => (
-                        <ReservationItem key={reservation.id} {...reservation} />
+                        <ReservationItem
+                            key={reservation.id}
+                            reservationToEdit={reservationToEdit}
+                            setReservationToEdit={setReservationToEdit}
+                            {...reservation}
+                        />
                     ))}
                     <View style={styles.viewAllBtnContainer}>
                         <Link asChild href="/reservations">

@@ -25,6 +25,10 @@ import { useSharedValue } from 'react-native-reanimated';
 import { memo, useEffect, useState } from 'react';
 import { deleteReservation, payReservation, unpayReservation } from '../../utils/reservations';
 
+interface ReservationRenderItemProps extends Reservation {
+    setReservationToEdit: (id: string) => void;
+}
+
 const AnimatedPressable = Reanimated.createAnimatedComponent(Pressable);
 
 const ReservationRenderItem = ({
@@ -34,7 +38,8 @@ const ReservationRenderItem = ({
     isPaid,
     price,
     id,
-}: Reservation) => {
+    setReservationToEdit,
+}: ReservationRenderItemProps) => {
     const { theme, palette } = useTheme();
     const styles = styling(palette);
     const [deleteLoading, setDeleteLoading] = useState(false);
@@ -160,6 +165,10 @@ const ReservationRenderItem = ({
         ]);
     };
 
+    const handleEdit = () => {
+        setReservationToEdit(id);
+    };
+
     const handlePay = async () => {
         setPayLoading(true);
 
@@ -225,7 +234,7 @@ const ReservationRenderItem = ({
                 <Reanimated.View style={[styles.dropdownContainer, animatedHeight]}>
                     <Reanimated.View ref={dropdownRef} style={[styles.dropdown, animatedOpacity]}>
                         <View style={styles.dropdownBtns}>
-                            <Button style={styles.dropdownBtn} text="Edit" />
+                            <Button style={styles.dropdownBtn} text="Edit" onPress={handleEdit} />
                             <Button
                                 style={styles.dropdownBtn}
                                 onPress={handleDelete}

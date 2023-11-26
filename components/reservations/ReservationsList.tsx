@@ -1,5 +1,5 @@
-import { RefreshControl, ScrollView, StyleSheet, View } from 'react-native';
-import { Reservation } from '../../types';
+import { RefreshControl, StyleSheet, View } from 'react-native';
+import { Colors, Reservation } from '../../types';
 import ReservationRenderItem from './ReservationRenderItem';
 import SectionHeader from './SectionHeader';
 import ListHeader from '../shared/ListHeader';
@@ -7,14 +7,18 @@ import TextInput from '../shared/TextInput';
 import ScreenLoader from '../shared/ScreenLoader';
 import Reanimated, { Layout } from 'react-native-reanimated';
 import NewButton from '../shared/NewButton';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { Dispatch, SetStateAction, useCallback, useEffect, useMemo, useState } from 'react';
 import { groupByPayment } from '../../utils/reservations';
 import { useReservationsStore } from '../../zustand/store';
 import { useTheme } from '../../hooks/useTheme';
 
-const ReservationsList = () => {
+interface ReservationsListProps {
+    setReservationToEdit: Dispatch<SetStateAction<string | null>>;
+}
+
+const ReservationsList = ({ setReservationToEdit }: ReservationsListProps) => {
     const { palette } = useTheme();
-    const styles = styling();
+    const styles = styling(palette);
     const [initialLoading, setInitialLoading] = useState(true);
     const { reservations, isLoading, isRefreshing, setIsRefreshing } = useReservationsStore();
     const [search, setSearch] = useState('');
@@ -58,54 +62,61 @@ const ReservationsList = () => {
         if (typeof item === 'string') {
             return <SectionHeader title={item} />;
         } else {
-            return <ReservationRenderItem {...item} />;
+            return <ReservationRenderItem {...item} setReservationToEdit={setReservationToEdit} />;
         }
     }, []);
 
     return (
-        <View style={styles.container}>
-            {(isLoading || initialLoading) && <ScreenLoader />}
-            <View style={styles.listHeader}>
-                <ListHeader />
-                <TextInput
-                    placeholder="Search reservations"
-                    value={search}
-                    onChangeText={setSearch}
-                />
+        <View style={styles.parentView}>
+            <View style={styles.container}>
+                {(isLoading || initialLoading) && <ScreenLoader />}
+                <View style={styles.listHeader}>
+                    <ListHeader />
+                    <TextInput
+                        placeholder="Search reservations"
+                        value={search}
+                        onChangeText={setSearch}
+                    />
+                </View>
+                <View style={styles.listContainer}>
+                    <Reanimated.FlatList
+                        layout={Layout}
+                        refreshControl={
+                            <RefreshControl
+                                refreshing={isRefreshing}
+                                onRefresh={() => setIsRefreshing(true)}
+                                colors={[palette.primaryAccent]}
+                                progressBackgroundColor={palette.primaryBackground}
+                            />
+                        }
+                        data={groupedReservations}
+                        renderItem={renderItem}
+                        keyExtractor={(item, index) => JSON.stringify(item) + index}
+                        contentContainerStyle={{
+                            paddingHorizontal: 16,
+                            paddingBottom: 32,
+                        }}
+                        initialNumToRender={7}
+                        maxToRenderPerBatch={10}
+                        windowSize={5}
+                    />
+                </View>
+                <NewButton />
             </View>
-            <View style={styles.listContainer}>
-                <Reanimated.FlatList
-                    layout={Layout}
-                    refreshControl={
-                        <RefreshControl
-                            refreshing={isRefreshing}
-                            onRefresh={() => setIsRefreshing(true)}
-                            colors={[palette.primaryAccent]}
-                            progressBackgroundColor={palette.primaryBackground}
-                        />
-                    }
-                    data={groupedReservations}
-                    renderItem={renderItem}
-                    keyExtractor={(item, index) => JSON.stringify(item) + index}
-                    contentContainerStyle={{
-                        paddingHorizontal: 16,
-                        paddingBottom: 32,
-                    }}
-                    initialNumToRender={7}
-                    maxToRenderPerBatch={10}
-                    windowSize={3}
-                />
-            </View>
-            <NewButton />
         </View>
     );
 };
 
-const styling = () =>
+const styling = (palette: Colors) =>
     StyleSheet.create({
+        parentView: {
+            backgroundColor: '#000000',
+            flex: 1,
+        },
         container: {
             flex: 1,
             position: 'relative',
+            backgroundColor: palette.primaryBackground,
         },
         listHeader: {
             paddingHorizontal: 16,
