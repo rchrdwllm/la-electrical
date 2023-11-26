@@ -6,6 +6,7 @@ import {
     ViewStyle,
     Platform,
     FlatList,
+    TextStyle,
 } from 'react-native';
 import { Colors } from '../../types';
 import Reanimated, {
@@ -30,14 +31,25 @@ import { useState } from 'react';
 interface SelectProps {
     data: string[];
     style?: StyleProp<ViewStyle>;
+    selectedItem?: string;
+    textStyle?: StyleProp<TextStyle>;
     onChange: (item: string) => void;
     placeholder?: string;
+    iconColor?: string;
 }
 
-const Select = ({ data, style, onChange, placeholder = 'Select' }: SelectProps) => {
+const Select = ({
+    data,
+    style,
+    selectedItem,
+    onChange,
+    iconColor,
+    placeholder = 'Select',
+    textStyle,
+}: SelectProps) => {
     const { theme, palette } = useTheme();
     const styles = styling(palette);
-    const [selected, setSelected] = useState<null | string>(null);
+    const [selected, setSelected] = useState<null | string>(selectedItem ?? null);
 
     const dropdownRef = useAnimatedRef<Reanimated.View>();
     const heightValue = useSharedValue(0);
@@ -136,14 +148,21 @@ const Select = ({ data, style, onChange, placeholder = 'Select' }: SelectProps) 
             <Reanimated.View style={[styles.container, animatedScale, style]}>
                 <View style={styles.flexContainer}>
                     <Text
-                        style={{
-                            color: palette.invertedText,
-                        }}
+                        style={[
+                            {
+                                color: palette.invertedText,
+                            },
+                            textStyle,
+                        ]}
                     >
                         {selected ? selected : placeholder}
                     </Text>
                     <Reanimated.View style={animatedRotate}>
-                        <ChevronDownIcon height={20} width={20} stroke={palette.invertedText} />
+                        <ChevronDownIcon
+                            height={20}
+                            width={20}
+                            stroke={iconColor ?? palette.invertedText}
+                        />
                     </Reanimated.View>
                 </View>
                 <Reanimated.View style={[styles.dropdownContainer, animatedHeight]}>
@@ -155,12 +174,13 @@ const Select = ({ data, style, onChange, placeholder = 'Select' }: SelectProps) 
                                 <Button
                                     text={item}
                                     key={item}
-                                    textStyle={
+                                    textStyle={[
                                         {
                                             textAlign: 'left',
                                             opacity: 0.75,
-                                        } as any
-                                    }
+                                        } as any,
+                                        textStyle,
+                                    ]}
                                     style={{
                                         paddingHorizontal: 0,
                                         backgroundColor: 'transparent',
@@ -184,6 +204,7 @@ const styling = (palette: Colors) =>
             paddingHorizontal: 10,
             paddingVertical: Platform.OS === 'ios' ? 12 : 15,
             borderRadius: 10,
+            backgroundColor: palette.secondaryAccent,
         },
         flexContainer: {
             flexDirection: 'row',
