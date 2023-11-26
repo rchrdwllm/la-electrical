@@ -27,6 +27,12 @@ export const deleteReservation = async (id: string) => {
     await deleteDoc(doc(firestore, 'reservations', id));
 };
 
+export const updateReservation = async (id: string, data: Partial<Reservation>) => {
+    await updateDoc(doc(firestore, 'reservations', id), {
+        ...data,
+    });
+};
+
 export const payReservation = async (id: string) => {
     await updateDoc(doc(firestore, 'reservations', id), {
         isPaid: true,
