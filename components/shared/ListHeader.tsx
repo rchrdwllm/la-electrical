@@ -38,7 +38,13 @@ const ListHeader = forwardRef(() => {
                 variant="secondary"
                 iconColor={palette.primaryAccent}
                 style={styles.backBtn}
-                onPress={() => router.back()}
+                onPress={() => {
+                    if (router.canGoBack()) {
+                        router.back();
+                    } else {
+                        router.replace('/index');
+                    }
+                }}
             />
             <Text fontWeight="bold" style={styles.title}>
                 {headerTitle}
