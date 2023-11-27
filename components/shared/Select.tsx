@@ -5,7 +5,6 @@ import {
     StyleProp,
     ViewStyle,
     Platform,
-    FlatList,
     TextStyle,
 } from 'react-native';
 import { Colors } from '../../types';
@@ -21,6 +20,7 @@ import Reanimated, {
     withSpring,
     withTiming,
 } from 'react-native-reanimated';
+import { FlatList } from 'react-native-gesture-handler';
 import Text from '../shared/Text';
 import Button from './Button';
 import ChevronDownIcon from '../../assets/icons/chevron-down-icon.svg';
@@ -36,8 +36,6 @@ interface SelectProps {
     onChange: (item: string) => void;
     placeholder?: string;
     iconColor?: string;
-    onResponderGrant?: () => void;
-    onResponderRelease?: () => void;
     linesToShow?: number;
 }
 
@@ -49,8 +47,6 @@ const Select = ({
     iconColor,
     placeholder = 'Select',
     textStyle,
-    onResponderGrant,
-    onResponderRelease,
     linesToShow,
 }: SelectProps) => {
     const { theme, palette } = useTheme();
@@ -178,8 +174,6 @@ const Select = ({
                                 maxHeight: linesToShow ? linesToShow * 44 : 200,
                             }}
                             data={data}
-                            onResponderGrant={onResponderGrant}
-                            onResponderRelease={onResponderRelease}
                             renderItem={({ item }) => (
                                 <Button
                                     text={item}

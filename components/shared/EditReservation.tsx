@@ -45,7 +45,6 @@ const EditReservation = ({ setReservationToEdit, reservationToEdit }: EditReserv
     );
     const [typeOfService, setTypeOfService] = useState(reservation.typeOfService);
     const [modeOfPayment, setModeOfPayment] = useState(reservation.modeOfPayment);
-    const [shouldNotPan, setShouldNotPan] = useState(false);
     const [noChanges, setNoChanges] = useState(true);
 
     useEffect(() => {
@@ -162,13 +161,7 @@ const EditReservation = ({ setReservationToEdit, reservationToEdit }: EditReserv
                         .restSpeedThreshold(2)
                         .overshootClamping(0)}
                     exiting={SlideOutDown}
-                    style={[
-                        styles.modal,
-                        animatedY,
-                        {
-                            pointerEvents: shouldNotPan ? 'box-none' : 'auto',
-                        },
-                    ]}
+                    style={[styles.modal, animatedY]}
                 >
                     <View style={styles.pill} />
                     <Text fontWeight="bold" style={styles.heading}>
@@ -211,8 +204,6 @@ const EditReservation = ({ setReservationToEdit, reservationToEdit }: EditReserv
                             onChange={setTypeOfService}
                             placeholder="Select a service"
                             iconColor={palette.primaryText}
-                            onResponderGrant={() => setShouldNotPan(true)}
-                            onResponderRelease={() => setShouldNotPan(false)}
                             linesToShow={3}
                         />
                         <Select
@@ -225,8 +216,6 @@ const EditReservation = ({ setReservationToEdit, reservationToEdit }: EditReserv
                             onChange={setModeOfPayment}
                             placeholder="Select mode of payment"
                             iconColor={palette.primaryText}
-                            onResponderGrant={() => setShouldNotPan(true)}
-                            onResponderRelease={() => setShouldNotPan(false)}
                         />
                         <View style={styles.btns}>
                             <Button
