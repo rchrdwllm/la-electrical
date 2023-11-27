@@ -37,7 +37,7 @@ export const dark: Colors = {
     success: '#69A155',
     warning: '#FFC42E',
     black: '#000000',
-    modalBackground: '#00000050',
+    modalBackground: '#ffffff26',
 };
 
 export default { light, dark };

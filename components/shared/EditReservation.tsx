@@ -255,7 +255,7 @@ const styling = (palette: Colors) =>
             width: '100%',
             height: '100%',
             flex: 1,
-            backgroundColor: '#00000050',
+            backgroundColor: palette.modalBackground,
         },
         modal: {
             position: 'absolute',
