@@ -3,9 +3,11 @@ import { AuthProvider } from '../context/Auth';
 import SplashScreen from '../components/SplashScreen';
 import Reanimated, { FadeIn, FadeOut } from 'react-native-reanimated';
 import { useCallback, useEffect, useState } from 'react';
+import { StyleSheet, LogBox } from 'react-native';
 import { useTheme } from '../hooks/useTheme';
 import { Colors } from '../types';
-import { StyleSheet } from 'react-native';
+
+LogBox.ignoreAllLogs();
 
 const Layout = () => {
     const [appIsReady, setAppIsReady] = useState(false);
