@@ -29,7 +29,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { StatusBar, setStatusBarStyle } from 'expo-status-bar';
 import { useWindowDimensions } from 'react-native';
 import { useReservationsStore } from '../../zustand/store';
-import { Gesture, GestureDetector, GestureHandlerRootView } from 'react-native-gesture-handler';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 const Admin = () => {
     const [loading, setLoading] = useState(false);
