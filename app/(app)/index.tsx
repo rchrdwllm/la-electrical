@@ -1,12 +1,12 @@
 import {
     View,
     StyleSheet,
-    Image,
     Pressable,
     Animated,
     ActivityIndicator,
     RefreshControl,
 } from 'react-native';
+import { Image } from 'expo-image';
 import Text from '../../components/shared/Text';
 import { Colors } from '../../types';
 import Reanimated, { useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
@@ -30,6 +30,8 @@ import { StatusBar, setStatusBarStyle } from 'expo-status-bar';
 import { useWindowDimensions } from 'react-native';
 import { useReservationsStore } from '../../zustand/store';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
+
+const AnimatedImage = Animated.createAnimatedComponent(Image);
 
 const Admin = () => {
     const [loading, setLoading] = useState(false);
@@ -167,7 +169,7 @@ const Admin = () => {
                                 },
                             ]}
                         >
-                            <Animated.Image
+                            <AnimatedImage
                                 style={[
                                     styles.headerBg,
                                     {
@@ -182,6 +184,7 @@ const Admin = () => {
                                     },
                                 ]}
                                 source={require('../../assets/header_bg.png')}
+                                placeholder={'L1KuoaOX~8=c}=1Ns.I=K#sCnkE#'}
                             />
                             <Animated.View
                                 style={[
