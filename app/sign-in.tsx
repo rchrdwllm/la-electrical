@@ -6,8 +6,8 @@ import {
     Keyboard,
     Pressable,
     ImageBackground,
-    Image,
 } from 'react-native';
+import { Image } from 'expo-image';
 import { Colors } from '../types';
 import Text from '../components/shared/Text';
 import TextInput from '../components/shared/TextInput';
@@ -68,10 +68,13 @@ const SignIn = () => {
         >
             <StatusBar animated style="light" />
             <Pressable style={styles.backgroundContainer} onPress={Keyboard.dismiss}>
-                <ImageBackground
+                {/* <ImageBackground
                     style={styles.background}
                     source={require('../assets/header_bg.png')}
                 >
+                    
+                </ImageBackground> */}
+                <View style={styles.backgroundContent}>
                     <View style={styles.backgroundText}>
                         <Image
                             style={styles.backgroundLogo}
@@ -82,7 +85,12 @@ const SignIn = () => {
                         </Text>
                     </View>
                     <Text style={styles.logoSubtext}>Lath's Auto-Electrical Shop</Text>
-                </ImageBackground>
+                </View>
+                <Image
+                    placeholder={'L1KuoaOX~8=c}=1Ns.I=K#sCnkE#'}
+                    style={styles.background}
+                    source={require('../assets/header_bg.png')}
+                />
             </Pressable>
             <Pressable style={styles.signInContainer} onPress={Keyboard.dismiss}>
                 <Text style={styles.signInText} fontWeight="bold">
@@ -126,11 +134,19 @@ const styling = (palette: Colors) =>
         backgroundContainer: {
             flex: 1,
         },
+        backgroundContent: {
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            width: '100%',
+            height: '100%',
+            zIndex: 1,
+            justifyContent: 'center',
+            alignItems: 'center',
+        },
         background: {
             flex: 1,
             objectFit: 'cover',
-            justifyContent: 'center',
-            alignItems: 'center',
             gap: 16,
         },
         backgroundLogo: {
