@@ -31,7 +31,7 @@ const Search = () => {
         textInputRef.current?.blur();
 
         if (!searchQuery) {
-            router.back();
+            router.canGoBack() ? router.back() : router.replace('/index');
         }
     };
 
@@ -60,7 +60,7 @@ const Search = () => {
                     />
                     {isFocused && (
                         <Button
-                            entering={FadeInRight}
+                            entering={FadeInRight.delay(250)}
                             exiting={FadeOutRight}
                             variant="tertiary"
                             text="Cancel"
