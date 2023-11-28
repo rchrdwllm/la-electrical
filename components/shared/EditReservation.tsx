@@ -98,8 +98,8 @@ const EditReservation = ({ setReservationToEdit, reservationToEdit }: EditReserv
     }));
 
     const handleConfirm = (date: Date) => {
-        setReservationDate(date);
         setIsDatePickerVisible(false);
+        setReservationDate(date);
     };
 
     const handleDateCancel = () => {
