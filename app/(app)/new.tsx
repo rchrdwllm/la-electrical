@@ -7,6 +7,8 @@ import Button from '../../components/shared/Button';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import Select from '../../components/shared/Select';
 import { useTheme } from '../../hooks/useTheme';
+import { services } from '../../constants/types-of-services';
+import { modesOfPayment } from '../../constants/modes-of-payment';
 import { useEffect, useState } from 'react';
 import { addReservation } from '../../utils/reservations';
 import { router } from 'expo-router';
@@ -20,16 +22,6 @@ const New = () => {
     const [reservationDate, setReservationDate] = useState<Date | null>(null);
     const [typeOfService, setTypeOfService] = useState('');
     const [modeOfPayment, setModeOfPayment] = useState('');
-
-    const services = [
-        'Alternator repair',
-        'Battery replacement',
-        'Brake pads replacement',
-        'Brake rotor replacement',
-        'Car battery replacement',
-        'Car door mirror replacement',
-    ];
-    const modesOfPayment = ['Cash', 'GCash'];
 
     useEffect(() => {
         setTimeout(() => {
@@ -50,29 +42,13 @@ const New = () => {
         if (reservationDate && typeOfService && modeOfPayment && name) {
             setIsLoading(true);
 
-            let price = 0;
-
-            switch (typeOfService) {
-                case 'Alternator repair':
-                    price = 1000;
-                    break;
-                case 'Battery replacement':
-                    price = 500;
-                    break;
-                case 'Brake pads replacement':
-                    price = 1500;
-                    break;
-                default:
-                    break;
-            }
-
             const reservation = {
                 name,
                 reservationDate,
                 typeOfService,
                 modeOfPayment,
                 isPaid: false,
-                price,
+                price: services.find(service => service.name === typeOfService)?.price || 0,
             };
 
             try {
@@ -147,7 +123,7 @@ const New = () => {
                     onPress={() => setIsDatePickerVisible(true)}
                 />
                 <Select
-                    data={services}
+                    data={services.map(service => service.name)}
                     style={{
                         backgroundColor:
                             theme === 'dark'

@@ -20,6 +20,11 @@ export interface Colors {
     modalBackground: string;
 }
 
+export interface Service {
+    name: string;
+    price: number;
+}
+
 export interface Reservation {
     reservationDate: Timestamp;
     name: string;

@@ -20,8 +20,10 @@ import TextInput from './TextInput';
 import Button from './Button';
 import Select from './Select';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
-import { updateReservation } from '../../utils/reservations';
 import { Timestamp } from 'firebase/firestore';
+import { updateReservation } from '../../utils/reservations';
+import { services } from '../../constants/types-of-services';
+import { modesOfPayment } from '../../constants/modes-of-payment';
 
 interface EditReservationProps {
     setReservationToEdit: Dispatch<SetStateAction<string | null>>;
@@ -95,16 +97,6 @@ const EditReservation = ({ setReservationToEdit, reservationToEdit }: EditReserv
         ],
     }));
 
-    const services = [
-        'Alternator repair',
-        'Battery replacement',
-        'Brake pads replacement',
-        'Brake rotor replacement',
-        'Car battery replacement',
-        'Car door mirror replacement',
-    ];
-    const modesOfPayment = ['Cash', 'GCash'];
-
     const handleConfirm = (date: Date) => {
         setReservationDate(date);
         setIsDatePickerVisible(false);
@@ -126,6 +118,7 @@ const EditReservation = ({ setReservationToEdit, reservationToEdit }: EditReserv
             reservationDate: Timestamp.fromDate(reservationDate!),
             typeOfService,
             modeOfPayment,
+            price: services.find(service => service.name === typeOfService)?.price || 0,
         });
 
         setIsLoading(false);
@@ -195,7 +188,7 @@ const EditReservation = ({ setReservationToEdit, reservationToEdit }: EditReserv
                             onPress={() => setIsDatePickerVisible(true)}
                         />
                         <Select
-                            data={services}
+                            data={services.map(service => service.name)}
                             selectedItem={typeOfService}
                             textStyle={{
                                 opacity: 1,
