@@ -11,6 +11,7 @@ import { Dispatch, SetStateAction, useCallback, useEffect, useMemo, useState } f
 import { groupByPayment } from '../../utils/reservations';
 import { useReservationsStore } from '../../zustand/store';
 import { useTheme } from '../../hooks/useTheme';
+import { useProgressViewOffset } from '../../hooks/useProgressViewOffset';
 
 interface ReservationsListProps {
     setReservationToEdit: Dispatch<SetStateAction<string | null>>;
@@ -19,6 +20,7 @@ interface ReservationsListProps {
 const ReservationsList = ({ setReservationToEdit }: ReservationsListProps) => {
     const { palette } = useTheme();
     const styles = styling(palette);
+    const progressViewOffset = useProgressViewOffset();
     const [initialLoading, setInitialLoading] = useState(true);
     const { reservations, isLoading, isRefreshing, setIsRefreshing } = useReservationsStore();
     const [search, setSearch] = useState('');
@@ -87,6 +89,7 @@ const ReservationsList = ({ setReservationToEdit }: ReservationsListProps) => {
                                 onRefresh={() => setIsRefreshing(true)}
                                 colors={[palette.primaryAccent]}
                                 progressBackgroundColor={palette.primaryBackground}
+                                progressViewOffset={progressViewOffset}
                             />
                         }
                         data={groupedReservations}
