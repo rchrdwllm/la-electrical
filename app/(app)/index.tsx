@@ -90,15 +90,6 @@ const Admin = () => {
         }
     }, [reservationToEdit]);
 
-    useEffect(() => {
-        console.log(
-            scrollY.interpolate({
-                inputRange: [-headerHeight, 0, headerHeight],
-                outputRange: [2, 1, 0.75],
-            })
-        );
-    }, [headerHeight]);
-
     return (
         <GestureHandlerRootView style={styles.parentContainer}>
             <StatusBar animated style="light" />
