@@ -2,7 +2,13 @@ import { View, StyleSheet, TextInput as RNTextInput, Keyboard } from 'react-nati
 import TextInput from '../../components/shared/TextInput';
 import { Colors, SearchCategory } from '../../types';
 import Button from '../../components/shared/Button';
-import Reanimated, { FadeInRight, FadeOutRight, Layout } from 'react-native-reanimated';
+import Reanimated, {
+    FadeInLeft,
+    FadeInRight,
+    FadeOutLeft,
+    FadeOutRight,
+    Layout,
+} from 'react-native-reanimated';
 import ButtonToggles from '../../components/shared/ButtonToggles';
 import { StatusBar } from 'expo-status-bar';
 import { useTheme } from '../../hooks/useTheme';
@@ -10,6 +16,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useEffect, useRef, useState } from 'react';
 import { router } from 'expo-router';
 import { searchCategories } from '../../constants/search-categories';
+import Text from '../../components/shared/Text';
 
 const Search = () => {
     const { palette } = useTheme();
@@ -78,6 +85,17 @@ const Search = () => {
                     setToggledCategory={setToggledCategory}
                 />
             </View>
+            <View style={styles.searchContent}>
+                {toggledCategory.title === 'Reservations' ? (
+                    <Reanimated.View key="reservations" entering={FadeInLeft} exiting={FadeOutLeft}>
+                        <Text>{toggledCategory.title}</Text>
+                    </Reanimated.View>
+                ) : (
+                    <Reanimated.View key="inventory" entering={FadeInRight} exiting={FadeOutRight}>
+                        <Text>{toggledCategory.title}</Text>
+                    </Reanimated.View>
+                )}
+            </View>
         </View>
     );
 };
@@ -104,6 +122,10 @@ const styling = (palette: Colors) =>
         cancelBtn: {
             flex: 1,
             width: '100%',
+        },
+        searchContent: {
+            padding: 16,
+            paddingBottom: 32,
         },
     });
 
