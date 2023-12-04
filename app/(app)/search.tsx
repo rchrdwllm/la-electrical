@@ -1,13 +1,15 @@
 import { View, StyleSheet, TextInput as RNTextInput, Keyboard } from 'react-native';
 import TextInput from '../../components/shared/TextInput';
-import { Colors } from '../../types';
+import { Colors, SearchCategory } from '../../types';
 import Button from '../../components/shared/Button';
 import Reanimated, { FadeInRight, FadeOutRight, Layout } from 'react-native-reanimated';
+import ButtonToggles from '../../components/shared/ButtonToggles';
 import { StatusBar } from 'expo-status-bar';
 import { useTheme } from '../../hooks/useTheme';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useEffect, useRef, useState } from 'react';
 import { router } from 'expo-router';
+import { searchCategories } from '../../constants/search-categories';
 
 const Search = () => {
     const { palette } = useTheme();
@@ -15,6 +17,7 @@ const Search = () => {
     const { top } = useSafeAreaInsets();
     const [isFocused, setIsFocused] = useState(false);
     const textInputRef = useRef<RNTextInput>(null);
+    const [toggledCategory, setToggledCategory] = useState<SearchCategory>(searchCategories[0]);
     const [searchQuery, setSearchQuery] = useState('');
 
     useEffect(() => {
@@ -69,6 +72,11 @@ const Search = () => {
                         />
                     )}
                 </Reanimated.View>
+                <ButtonToggles
+                    categories={searchCategories}
+                    toggledCategory={toggledCategory}
+                    setToggledCategory={setToggledCategory}
+                />
             </View>
         </View>
     );
@@ -82,6 +90,7 @@ const styling = (palette: Colors) =>
         },
         searchHeader: {
             paddingHorizontal: 16,
+            gap: 16,
         },
         searchContainer: {
             flexDirection: 'row',

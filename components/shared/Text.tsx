@@ -1,4 +1,4 @@
-import { Text as RNText, TextProps as RNTextProps, TextStyle, StyleProp } from 'react-native';
+import { TextProps as RNTextProps, TextStyle, StyleProp } from 'react-native';
 import Reanimated, { AnimateProps } from 'react-native-reanimated';
 import {
     useFonts,
@@ -29,7 +29,7 @@ const Text = forwardRef(
         }
 
         return (
-            <RNText
+            <Reanimated.Text
                 style={[
                     {
                         color: palette[variant ?? 'primaryText'],
@@ -45,7 +45,7 @@ const Text = forwardRef(
                 numberOfLines={numberOfLines}
             >
                 {children}
-            </RNText>
+            </Reanimated.Text>
         );
     }
 );

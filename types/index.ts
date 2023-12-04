@@ -34,3 +34,8 @@ export interface Reservation {
     price: number;
     modeOfPayment: string;
 }
+
+export interface SearchCategory {
+    title: string;
+    onPress: () => void;
+}
