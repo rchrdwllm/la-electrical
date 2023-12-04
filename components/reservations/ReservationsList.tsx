@@ -26,8 +26,8 @@ const ReservationsList = ({ setReservationToEdit }: ReservationsListProps) => {
     const [search, setSearch] = useState('');
     const groupedReservations: (string | Reservation)[] = useMemo(() => {
         if (search) {
-            const filteredReservations = reservations.filter(reservations => {
-                const { name, typeOfService, price, reservationDate } = reservations;
+            const filteredReservations = reservations.filter(reservation => {
+                const { name, typeOfService, price, reservationDate } = reservation;
                 return (
                     name.toLowerCase().includes(search.toLowerCase()) ||
                     typeOfService.toLowerCase().includes(search.toLowerCase()) ||
