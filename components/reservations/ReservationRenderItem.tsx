@@ -173,13 +173,9 @@ const ReservationRenderItem = ({
         setPayLoading(true);
 
         if (isPaid) {
-            console.log('Unpaying...');
             await unpayReservation(id);
-            console.log('Unpaid');
         } else {
-            console.log('Paying...');
             await payReservation(id);
-            console.log('Paid');
         }
 
         setPayLoading(false);
