@@ -23,7 +23,7 @@ const styling = (palette: Colors) =>
             width: '100%',
             height: '100%',
             flex: 1,
-            zIndex: 2,
+            zIndex: 3,
             backgroundColor: palette.primaryBackground,
             justifyContent: 'center',
             alignItems: 'center',

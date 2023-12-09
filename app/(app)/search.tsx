@@ -6,7 +6,7 @@ import {
     useWindowDimensions,
 } from 'react-native';
 import TextInput from '../../components/shared/TextInput';
-import { Colors, SearchCategory } from '../../types';
+import { Colors, Reservation, SearchCategory } from '../../types';
 import Button from '../../components/shared/Button';
 import Reanimated, {
     FadeInLeft,
@@ -44,40 +44,54 @@ const Search = () => {
     const textInputRef = useRef<RNTextInput>(null);
     const [toggledCategory, setToggledCategory] = useState<SearchCategory>(searchCategories[0]);
     const [searchQuery, setSearchQuery] = useState('');
+    const [searchLoading, setSearchLoading] = useState(false);
     const [reservationToEdit, setReservationToEdit] = useState<string | null>(null);
     const { reservations } = useReservationsStore();
     const scaleValue = useSharedValue(1);
     const borderRadiusValue = useSharedValue(0);
-    const filteredReservations = useMemo(() => {
-        if (searchQuery) {
-            const filteredReservations = reservations.filter(reservation => {
-                const { name, typeOfService, price, reservationDate } = reservation;
-                return (
-                    name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                    typeOfService.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                    price.toString().toLowerCase().includes(searchQuery.toLowerCase()) ||
-                    `${Intl.DateTimeFormat(navigator.language, {
-                        weekday: 'long',
-                        month: 'short',
-                        day: 'numeric',
-                    }).format(reservationDate.toDate())} ${Intl.DateTimeFormat('en', {
-                        hour: 'numeric',
-                        minute: 'numeric',
-                        hour12: true,
-                    }).format(new Date(reservationDate.toDate()))}`
-                        .toLowerCase()
-                        .includes(searchQuery.toLowerCase())
-                );
-            });
-            return filteredReservations;
-        } else {
-            return [];
-        }
-    }, [searchQuery, reservations]);
+    const [filteredReservations, setFilteredReservations] = useState<Reservation[]>([]);
     const reservationsEmpty = useMemo(
         () => (filteredReservations.length ? false : true),
         [filteredReservations]
     );
+
+    useEffect(() => {
+        setSearchLoading(true);
+
+        const timer = setTimeout(() => {
+            if (searchQuery) {
+                const filteredReservations = reservations.filter(reservation => {
+                    const { name, typeOfService, price, reservationDate } = reservation;
+                    return (
+                        name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                        typeOfService.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                        price.toString().toLowerCase().includes(searchQuery.toLowerCase()) ||
+                        `${Intl.DateTimeFormat(navigator.language, {
+                            weekday: 'long',
+                            month: 'short',
+                            day: 'numeric',
+                        }).format(reservationDate.toDate())} ${Intl.DateTimeFormat('en', {
+                            hour: 'numeric',
+                            minute: 'numeric',
+                            hour12: true,
+                        }).format(new Date(reservationDate.toDate()))}`
+                            .toLowerCase()
+                            .includes(searchQuery.toLowerCase())
+                    );
+                });
+
+                setFilteredReservations(filteredReservations);
+            } else {
+                setFilteredReservations([]);
+            }
+
+            setSearchLoading(false);
+        }, 500);
+
+        return () => {
+            clearTimeout(timer);
+        };
+    }, [searchQuery, reservations]);
 
     useEffect(() => {
         Keyboard.addListener('keyboardDidHide', () => {
@@ -99,9 +113,13 @@ const Search = () => {
     }, [reservationToEdit]);
 
     useEffect(() => {
-        setTimeout(() => {
+        const timer = setTimeout(() => {
             setIsLoading(false);
         }, 500);
+
+        return () => {
+            clearTimeout(timer);
+        };
     }, []);
 
     const animatedScale = useAnimatedStyle(() => ({
@@ -224,18 +242,26 @@ const Search = () => {
                     />
                 </View>
                 <View style={styles.searchContent}>
-                    <Reanimated.View style={[styles.reservationsContent, animatedReservations]}>
-                        {reservationsEmpty && (
-                            <ListEmpty text="Nothing here! Maybe try to search something?" />
-                        )}
-                        <ReservationsResults
-                            reservations={filteredReservations}
-                            setReservationToEdit={setReservationToEdit}
-                        />
-                    </Reanimated.View>
-                    <Reanimated.View style={[styles.inventoryContent, animatedInventory]}>
-                        <ListEmpty text="Looking for something? Search it up!" />
-                    </Reanimated.View>
+                    {searchLoading ? (
+                        <ScreenLoader />
+                    ) : (
+                        <>
+                            <Reanimated.View
+                                style={[styles.reservationsContent, animatedReservations]}
+                            >
+                                {reservationsEmpty && (
+                                    <ListEmpty text="Nothing here! Maybe try to search something?" />
+                                )}
+                                <ReservationsResults
+                                    reservations={filteredReservations}
+                                    setReservationToEdit={setReservationToEdit}
+                                />
+                            </Reanimated.View>
+                            <Reanimated.View style={[styles.inventoryContent, animatedInventory]}>
+                                <ListEmpty text="Looking for something? Search it up!" />
+                            </Reanimated.View>
+                        </>
+                    )}
                 </View>
             </Reanimated.View>
             {reservationToEdit && (
@@ -277,6 +303,7 @@ const styling = (palette: Colors) =>
             width: '100%',
         },
         searchContent: {
+            position: 'relative',
             flex: 1,
             flexDirection: 'row',
         },

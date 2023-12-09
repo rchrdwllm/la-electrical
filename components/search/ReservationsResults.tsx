@@ -1,8 +1,8 @@
-import { useCallback } from 'react';
 import { View } from 'react-native';
 import Reanimated from 'react-native-reanimated';
 import ReservationRenderItem from '../reservations/ReservationRenderItem';
 import { Reservation } from '../../types';
+import { useCallback, memo } from 'react';
 
 interface ReservationsResultsProps {
     reservations: Reservation[];
@@ -39,4 +39,4 @@ const ReservationsResults = ({ reservations, setReservationToEdit }: Reservation
     );
 };
 
-export default ReservationsResults;
+export default memo(ReservationsResults);
