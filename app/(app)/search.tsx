@@ -16,6 +16,7 @@ import Reanimated, {
     Layout,
     useAnimatedStyle,
     useSharedValue,
+    withSpring,
     withTiming,
 } from 'react-native-reanimated';
 import ButtonToggles from '../../components/shared/ButtonToggles';
@@ -118,7 +119,23 @@ const Search = () => {
         return {
             transform: [
                 {
-                    translateX: isToggled ? withTiming(0) : withTiming(-width),
+                    translateX: isToggled
+                        ? withSpring(0, {
+                              mass: 1,
+                              damping: 18,
+                              stiffness: 150,
+                              overshootClamping: false,
+                              restDisplacementThreshold: 0.01,
+                              restSpeedThreshold: 2,
+                          })
+                        : withSpring(-width, {
+                              mass: 1,
+                              damping: 18,
+                              stiffness: 150,
+                              overshootClamping: false,
+                              restDisplacementThreshold: 0.01,
+                              restSpeedThreshold: 2,
+                          }),
                 },
             ],
             opacity: isToggled ? withTiming(1) : withTiming(0),
@@ -131,7 +148,23 @@ const Search = () => {
         return {
             transform: [
                 {
-                    translateX: isToggled ? withTiming(-width) : withTiming(0),
+                    translateX: isToggled
+                        ? withSpring(-width, {
+                              mass: 1,
+                              damping: 18,
+                              stiffness: 150,
+                              overshootClamping: false,
+                              restDisplacementThreshold: 0.01,
+                              restSpeedThreshold: 2,
+                          })
+                        : withSpring(0, {
+                              mass: 1,
+                              damping: 18,
+                              stiffness: 150,
+                              overshootClamping: false,
+                              restDisplacementThreshold: 0.01,
+                              restSpeedThreshold: 2,
+                          }),
                 },
             ],
             opacity: isToggled ? withTiming(1) : withTiming(0),

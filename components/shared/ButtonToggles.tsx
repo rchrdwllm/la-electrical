@@ -8,6 +8,7 @@ import {
     useAnimatedStyle,
     useDerivedValue,
     useSharedValue,
+    withSpring,
     withTiming,
 } from 'react-native-reanimated';
 import { ReactNode, useState } from 'react';
@@ -69,7 +70,7 @@ const ToggleButton = ({ toggled, children, onPress }: ToggleButtonProps) => {
         color: interpolateColor(
             toggleProgress.value,
             [0, 1],
-            [palette.secondaryText, palette.invertedText]
+            [palette.primaryAccent, palette.invertedText]
         ),
     }));
 
@@ -92,11 +93,21 @@ const ButtonToggles = ({ categories, toggledCategory, setToggledCategory }: Butt
     const toggleProgress = useDerivedValue(
         () =>
             toggledCategory.title === 'Reservations'
-                ? withTiming(1, {
-                      duration: 250,
+                ? withSpring(1, {
+                      mass: 0.5,
+                      damping: 16,
+                      stiffness: 120,
+                      overshootClamping: false,
+                      restDisplacementThreshold: 0.01,
+                      restSpeedThreshold: 2,
                   })
-                : withTiming(0, {
-                      duration: 250,
+                : withSpring(0, {
+                      mass: 0.5,
+                      damping: 16,
+                      stiffness: 120,
+                      overshootClamping: false,
+                      restDisplacementThreshold: 0.01,
+                      restSpeedThreshold: 2,
                   }),
         [toggledCategory, toggledCategory.title]
     );
