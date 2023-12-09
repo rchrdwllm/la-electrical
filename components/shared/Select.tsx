@@ -6,6 +6,7 @@ import {
     ViewStyle,
     Platform,
     TextStyle,
+    PressableProps,
 } from 'react-native';
 import { Colors } from '../../types';
 import Reanimated, {
@@ -28,7 +29,7 @@ import { useTheme } from '../../hooks/useTheme';
 import { useSharedValue } from 'react-native-reanimated';
 import { useState } from 'react';
 
-interface SelectProps {
+interface SelectProps extends PressableProps {
     data: string[];
     style?: StyleProp<ViewStyle>;
     selectedItem?: string;
@@ -48,6 +49,7 @@ const Select = ({
     placeholder = 'Select',
     textStyle,
     linesToShow,
+    onLayout,
 }: SelectProps) => {
     const { theme, palette } = useTheme();
     const styles = styling(palette);
@@ -147,7 +149,7 @@ const Select = ({
 
     return (
         <Pressable onPress={handleAnimate} onPressIn={onPressIn} onPressOut={onPressOut}>
-            <Reanimated.View style={[styles.container, animatedScale, style]}>
+            <Reanimated.View onLayout={onLayout} style={[styles.container, animatedScale, style]}>
                 <View style={styles.flexContainer}>
                     <Text
                         style={[

@@ -20,6 +20,7 @@ import TextInput from './TextInput';
 import Button from './Button';
 import Select from './Select';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
+import ScreenLoader from './ScreenLoader';
 import { Timestamp } from 'firebase/firestore';
 import { updateReservation } from '../../utils/reservations';
 import { services } from '../../constants/types-of-services';
@@ -39,6 +40,7 @@ const EditReservation = ({ setReservationToEdit, reservationToEdit }: EditReserv
     const reservation = reservationById(reservationToEdit);
     const offset = useSharedValue(0);
     const { height } = useWindowDimensions();
+    const [screenLoading, setScreenLoading] = useState(true);
     const [isLoading, setIsLoading] = useState(false);
     const [isDatePickerVisible, setIsDatePickerVisible] = useState(false);
     const [name, setName] = useState(reservation.name);
@@ -161,6 +163,7 @@ const EditReservation = ({ setReservationToEdit, reservationToEdit }: EditReserv
                         Edit reservation
                     </Text>
                     <View style={styles.forms}>
+                        {screenLoading && <ScreenLoader />}
                         <TextInput placeholder="Name" value={name} onChangeText={setName} />
                         <Button
                             text={
@@ -209,6 +212,9 @@ const EditReservation = ({ setReservationToEdit, reservationToEdit }: EditReserv
                             onChange={setModeOfPayment}
                             placeholder="Select mode of payment"
                             iconColor={palette.primaryText}
+                            onLayout={() => {
+                                setScreenLoading(false);
+                            }}
                         />
                         <View style={styles.btns}>
                             <Button
@@ -274,6 +280,7 @@ const styling = (palette: Colors) =>
             fontSize: 24,
         },
         forms: {
+            position: 'relative',
             width: '100%',
             gap: 16,
         },
