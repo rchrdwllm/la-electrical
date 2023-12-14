@@ -37,7 +37,6 @@ const InventoryItem = ({
             <View style={styles.imageContainer}>
                 <Image style={styles.image} source={image}></Image>
             </View>
-
             <Text fontWeight="medium">{name}</Text>
             <Text style={styles.text}>{number} pieces</Text>
         </Pressable>

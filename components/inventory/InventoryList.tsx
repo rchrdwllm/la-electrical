@@ -1,7 +1,7 @@
 import { FlatList, View } from 'react-native';
-import { inventoryItems } from '../../constants/inventory-items';
 import InventoryItem from './InventoryItem';
 import { useCallback } from 'react';
+import { useInventoryStore } from '../../zustand/store';
 import { Inventory } from '../../types';
 
 interface InventoryListProps {
@@ -9,6 +9,8 @@ interface InventoryListProps {
 }
 
 const InventoryList = ({ setInventoryToEdit }: InventoryListProps) => {
+    const { inventoryItems } = useInventoryStore();
+
     const renderItem = useCallback(({ index, item }: { item: Inventory; index: number }) => {
         return (
             <InventoryItem
