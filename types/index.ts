@@ -39,3 +39,10 @@ export interface SearchCategory {
     title: string;
     onPress: () => void;
 }
+
+export interface Inventory {
+    image: string;
+    name: string;
+    number: number;
+    id: number;
+}

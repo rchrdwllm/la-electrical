@@ -6,6 +6,7 @@ import { useEffect } from "react";
 import { StatusBar, setStatusBarStyle } from "expo-status-bar";
 import ListHeader from "../../components/shared/ListHeader";
 import TextInput from "../../components/shared/TextInput";
+import InventoryList from "../../components/inventory/InventoryList";
 
 const Inventory = () => {
   const { theme, palette } = useTheme();
@@ -22,6 +23,7 @@ const Inventory = () => {
       <StatusBar animated style={theme === "light" ? "dark" : "light"} />
       <ListHeader></ListHeader>
       <TextInput style={styles.textInput} placeholder={"Search Inventory"} />
+      <InventoryList />
     </View>
   );
 };
