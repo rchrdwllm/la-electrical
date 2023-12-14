@@ -2,7 +2,15 @@ import { View, StyleSheet, Pressable } from 'react-native';
 import { Image } from 'expo-image';
 import Text from '../shared/Text';
 import { Colors, Inventory } from '../../types';
+import Reanimated, {
+    Easing,
+    useAnimatedStyle,
+    useSharedValue,
+    withTiming,
+} from 'react-native-reanimated';
 import { useTheme } from '../../hooks/useTheme';
+
+const AnimatedPressable = Reanimated.createAnimatedComponent(Pressable);
 
 interface InventoryItemProps extends Inventory {
     index: number;
@@ -19,10 +27,32 @@ const InventoryItem = ({
 }: InventoryItemProps) => {
     const { palette } = useTheme();
     const styles = styling(palette);
+    const scaleProgress = useSharedValue(1);
+
+    const onPressIn = () => {
+        scaleProgress.value = 0.95;
+    };
+
+    const onPressOut = () => {
+        scaleProgress.value = 1;
+    };
+
+    const animatedScale = useAnimatedStyle(() => ({
+        transform: [
+            {
+                scale: withTiming(scaleProgress.value, {
+                    duration: 1000,
+                    easing: Easing.out(Easing.exp),
+                }),
+            },
+        ],
+    }));
 
     return (
-        <Pressable
+        <AnimatedPressable
             onPress={() => setInventoryToEdit(id)}
+            onPressIn={onPressIn}
+            onPressOut={onPressOut}
             style={[
                 styles.container,
                 index % 2 === 0
@@ -32,6 +62,7 @@ const InventoryItem = ({
                     : {
                           marginLeft: 10,
                       },
+                animatedScale,
             ]}
         >
             <View style={styles.imageContainer}>
@@ -39,7 +70,7 @@ const InventoryItem = ({
             </View>
             <Text fontWeight="medium">{name}</Text>
             <Text style={styles.text}>{number} pieces</Text>
-        </Pressable>
+        </AnimatedPressable>
     );
 };
 

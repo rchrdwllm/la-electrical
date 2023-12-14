@@ -6,7 +6,7 @@ import {
     useWindowDimensions,
 } from 'react-native';
 import TextInput from '../../components/shared/TextInput';
-import { Colors, Reservation, SearchCategory } from '../../types';
+import { Colors, Inventory, Reservation, SearchCategory } from '../../types';
 import Button from '../../components/shared/Button';
 import Reanimated, {
     FadeInLeft,
@@ -28,11 +28,13 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { router } from 'expo-router';
 import { searchCategories } from '../../constants/search-categories';
-import { useReservationsStore } from '../../zustand/store';
+import { useInventoryStore, useReservationsStore } from '../../zustand/store';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import EditReservation from '../../components/shared/EditReservation';
 import ListEmpty from '../../components/shared/ListEmpty';
 import ScreenLoader from '../../components/shared/ScreenLoader';
+import InventoryResults from '../../components/search/InventoryResults';
+import EditInventory from '../../components/shared/EditInventory';
 
 const Search = () => {
     const { palette } = useTheme();
@@ -46,13 +48,20 @@ const Search = () => {
     const [searchQuery, setSearchQuery] = useState('');
     const [searchLoading, setSearchLoading] = useState(false);
     const [reservationToEdit, setReservationToEdit] = useState<string | null>(null);
+    const [inventoryToEdit, setInventoryToEdit] = useState<number | null>(null);
     const { reservations } = useReservationsStore();
+    const { inventoryItems } = useInventoryStore();
     const scaleValue = useSharedValue(1);
     const borderRadiusValue = useSharedValue(0);
     const [filteredReservations, setFilteredReservations] = useState<Reservation[]>([]);
+    const [filteredItems, setFilteredItems] = useState<Inventory[]>([]);
     const reservationsEmpty = useMemo(
         () => (filteredReservations.length ? false : true),
         [filteredReservations]
+    );
+    const inventoryEmpty = useMemo(
+        () => (filteredReservations.length ? false : true),
+        [inventoryItems]
     );
 
     useEffect(() => {
@@ -79,10 +88,20 @@ const Search = () => {
                             .includes(searchQuery.toLowerCase())
                     );
                 });
+                const filteredItems = inventoryItems.filter(item => {
+                    const { name, number } = item;
+
+                    return (
+                        name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                        number.toString().toLowerCase() === searchQuery.toLowerCase()
+                    );
+                });
 
                 setFilteredReservations(filteredReservations);
+                setFilteredItems(filteredItems);
             } else {
                 setFilteredReservations([]);
+                setFilteredItems([]);
             }
 
             setSearchLoading(false);
@@ -91,7 +110,7 @@ const Search = () => {
         return () => {
             clearTimeout(timer);
         };
-    }, [searchQuery, reservations]);
+    }, [searchQuery, reservations, inventoryItems]);
 
     useEffect(() => {
         Keyboard.addListener('keyboardDidHide', () => {
@@ -103,14 +122,14 @@ const Search = () => {
     }, []);
 
     useEffect(() => {
-        if (reservationToEdit) {
+        if (reservationToEdit || inventoryToEdit) {
             scaleValue.value = withTiming(0.9);
             borderRadiusValue.value = withTiming(8);
         } else {
             scaleValue.value = withTiming(1);
             borderRadiusValue.value = withTiming(1);
         }
-    }, [reservationToEdit]);
+    }, [reservationToEdit, inventoryToEdit]);
 
     useEffect(() => {
         const timer = setTimeout(() => {
@@ -158,10 +177,12 @@ const Search = () => {
             ],
             opacity: isToggled ? withTiming(1) : withTiming(0),
         };
-    });
+    }, [toggledCategory, toggledCategory.title, searchQuery]);
 
     const animatedInventory = useAnimatedStyle(() => {
         const isToggled = toggledCategory.title === 'Inventory';
+
+        console.log(isToggled);
 
         return {
             transform: [
@@ -187,7 +208,7 @@ const Search = () => {
             ],
             opacity: isToggled ? withTiming(1) : withTiming(0),
         };
-    });
+    }, [toggledCategory, toggledCategory.title, searchQuery]);
 
     const handleCancel = () => {
         setIsFocused(false);
@@ -197,6 +218,10 @@ const Search = () => {
             router.canGoBack() ? router.back() : router.replace('/index');
         }
     };
+
+    useEffect(() => {
+        console.log(toggledCategory);
+    }, [searchQuery]);
 
     return (
         <GestureHandlerRootView style={styles.parentContainer}>
@@ -258,7 +283,13 @@ const Search = () => {
                                 />
                             </Reanimated.View>
                             <Reanimated.View style={[styles.inventoryContent, animatedInventory]}>
-                                <ListEmpty text="Looking for something? Search it up!" />
+                                {reservationsEmpty && (
+                                    <ListEmpty text="Looking for something? Search it up!" />
+                                )}
+                                <InventoryResults
+                                    inventoryItems={filteredItems}
+                                    setInventoryToEdit={setInventoryToEdit}
+                                />
                             </Reanimated.View>
                         </>
                     )}
@@ -268,6 +299,12 @@ const Search = () => {
                 <EditReservation
                     reservationToEdit={reservationToEdit}
                     setReservationToEdit={setReservationToEdit}
+                />
+            )}
+            {inventoryToEdit && (
+                <EditInventory
+                    inventoryToEdit={inventoryToEdit}
+                    setInventoryToEdit={setInventoryToEdit}
                 />
             )}
         </GestureHandlerRootView>
