@@ -15,7 +15,7 @@ const InventoryResults = ({ inventoryItems, setInventoryToEdit }: InventoryResul
         ({ item, index }: { item: Inventory; index: number }) => (
             <InventoryItem {...item} index={index} setInventoryToEdit={setInventoryToEdit} />
         ),
-        []
+        [inventoryItems]
     );
 
     return (

@@ -25,7 +25,7 @@ import ReservationsResults from '../../components/search/ReservationsResults';
 import { StatusBar } from 'expo-status-bar';
 import { useTheme } from '../../hooks/useTheme';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { Fragment, useEffect, useMemo, useRef, useState } from 'react';
 import { router } from 'expo-router';
 import { searchCategories } from '../../constants/search-categories';
 import { useInventoryStore, useReservationsStore } from '../../zustand/store';
@@ -59,10 +59,7 @@ const Search = () => {
         () => (filteredReservations.length ? false : true),
         [filteredReservations]
     );
-    const inventoryEmpty = useMemo(
-        () => (filteredReservations.length ? false : true),
-        [inventoryItems]
-    );
+    const inventoryEmpty = useMemo(() => (filteredItems.length ? false : true), [filteredItems]);
 
     useEffect(() => {
         setSearchLoading(true);
@@ -177,12 +174,10 @@ const Search = () => {
             ],
             opacity: isToggled ? withTiming(1) : withTiming(0),
         };
-    }, [toggledCategory, toggledCategory.title, searchQuery]);
+    }, [toggledCategory, toggledCategory.title, searchQuery, filteredItems]);
 
     const animatedInventory = useAnimatedStyle(() => {
         const isToggled = toggledCategory.title === 'Inventory';
-
-        console.log(isToggled);
 
         return {
             transform: [
@@ -208,7 +203,7 @@ const Search = () => {
             ],
             opacity: isToggled ? withTiming(1) : withTiming(0),
         };
-    }, [toggledCategory, toggledCategory.title, searchQuery]);
+    }, [toggledCategory, toggledCategory.title, searchQuery, filteredItems]);
 
     const handleCancel = () => {
         setIsFocused(false);
@@ -218,10 +213,6 @@ const Search = () => {
             router.canGoBack() ? router.back() : router.replace('/index');
         }
     };
-
-    useEffect(() => {
-        console.log(toggledCategory);
-    }, [searchQuery]);
 
     return (
         <GestureHandlerRootView style={styles.parentContainer}>
@@ -272,21 +263,33 @@ const Search = () => {
                     ) : (
                         <>
                             <Reanimated.View
+                                key={'reservationsResultsContainer'}
                                 style={[styles.reservationsContent, animatedReservations]}
                             >
                                 {reservationsEmpty && (
-                                    <ListEmpty text="Nothing here! Maybe try to search something?" />
+                                    <ListEmpty
+                                        key={'reservationsEmpty'}
+                                        text="Nothing here! Maybe try to search something?"
+                                    />
                                 )}
                                 <ReservationsResults
+                                    key={'reservationsResults'}
                                     reservations={filteredReservations}
                                     setReservationToEdit={setReservationToEdit}
                                 />
                             </Reanimated.View>
-                            <Reanimated.View style={[styles.inventoryContent, animatedInventory]}>
-                                {reservationsEmpty && (
-                                    <ListEmpty text="Looking for something? Search it up!" />
+                            <Reanimated.View
+                                key={'inventoryResult'}
+                                style={[styles.inventoryContent, animatedInventory]}
+                            >
+                                {inventoryEmpty && (
+                                    <ListEmpty
+                                        key={'inventoryEmpty'}
+                                        text="Looking for something? Search it up!"
+                                    />
                                 )}
                                 <InventoryResults
+                                    key={'inventoryResultsContainer'}
                                     inventoryItems={filteredItems}
                                     setInventoryToEdit={setInventoryToEdit}
                                 />
