@@ -68,12 +68,6 @@ const SignIn = () => {
         >
             <StatusBar animated style="light" />
             <Pressable style={styles.backgroundContainer} onPress={Keyboard.dismiss}>
-                {/* <ImageBackground
-                    style={styles.background}
-                    source={require('../assets/header_bg.png')}
-                >
-                    
-                </ImageBackground> */}
                 <View style={styles.backgroundContent}>
                     <View style={styles.backgroundText}>
                         <Image
